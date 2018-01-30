@@ -24,8 +24,6 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
-        'Topic :: System :: Publishing',
-        'License :: Open Publishing License',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
         ],
