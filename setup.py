@@ -14,7 +14,7 @@ setup(
     description='API Wrapper for Open Publishing API',
 
     version=VERSION,
-    download_url='https://github.com/XXX/XXX/archive/'+VERSION+'.zip',
+    download_url='https://github.com/open-publishing/open-publishing-api/archive/'+VERSION+'.zip',
     url='https://api.openpublishing.com/',
 
     author='Open Publishing GmbH',
@@ -25,7 +25,7 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
         'Topic :: System :: Publishing',
-        #'License :: OSI Approved :: MIT License',
+        'License :: Open Publishing License',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
         ],
