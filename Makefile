@@ -4,7 +4,7 @@ all:
 	@echo ""
 	@echo "build           -- build python package"
 	@echo ""
-	@echo "upload-pypi     -- upload package to pypi"
+	@echo "pypi           -- upload package to pypi"
 	@echo ""
 	@echo "test            -- execute test suite"
 	@echo ""
@@ -22,7 +22,7 @@ build:
 	@python3 setup.py sdist --formats=gztar
 	#@python3 setup.py egg_info
 
-upload-pypi:
+pypi:
 	# python3 setup.py register -r pypi
 	#@python3 setup.py sdist upload -r pypi
 	echo "Upload to pypi disabled"
