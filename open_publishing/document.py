@@ -3,10 +3,11 @@ import datetime
 from .core import SimpleField, FieldDescriptor, DatabaseObject, DatabaseObjectField, FieldGroup
 
 from .core.enums import DocumentStatus, FieldKind, Language, OnixStyle, OnixStatus, PreviewDisplayMode, PreviewTOCVisible, BookBinding
-from .core.enums import ProcessingType
+from .core.enums import ProcessingType, DRM, PublicationType
 from .prices.price_group import PriceGroup
 from .misc import MiscGroup
 from .authors import AuthorsList
+from .mediafilelinks import MediafileLinkList
 from .provision import ProvisionRulesList
 from .brands import BrandsField
 from .imprint import ImprintField
@@ -74,6 +75,11 @@ class Document(DatabaseObject):
                                                        dtype=Language,
                                                        nullable=True)
 
+        self._fields["drm"] = SimpleField(database_object=self,
+                                          aspect="internal.*",
+                                          field_locator="internal.drm",
+                                          dtype=DRM)
+        
         self._fields["_page_count_technical"] = SimpleField(database_object=self,
                                                             aspect="ebook.*",
                                                             field_locator="ebook.page_count_technical",
@@ -111,6 +117,7 @@ class Document(DatabaseObject):
         self._fields["sales_rights"] = SalesRightsGroup(document=self)
         self._fields["misc"] = MiscGroup(document=self) 
         self._fields["authors"] = AuthorsList(document=self)
+        self._fields["mediafilelinks"] = MediafileLinkList(document=self)
         self._fields["provision_rules"] = ProvisionRulesList(document=self)
         self._fields["brands"] = BrandsField(document=self)
         self._fields["upload_brand"] = UploadBrandField(document=self)
@@ -142,6 +149,7 @@ class Document(DatabaseObject):
     abstract = FieldDescriptor("abstract")
     self_publishing = FieldDescriptor("self_publishing")
     language = FieldDescriptor("language")
+    drm = FieldDescriptor("drm")
     _page_count_technical = FieldDescriptor("_page_count_technical")
     _page_count_custom = FieldDescriptor("_page_count_custom")
     urls = FieldDescriptor("urls")
@@ -154,6 +162,7 @@ class Document(DatabaseObject):
     sales_rights = FieldDescriptor("sales_rights")
     misc = FieldDescriptor("misc") #For testing purposes
     authors = FieldDescriptor("authors")
+    mediafilelinks = FieldDescriptor("mediafilelinks")
     provision_rules = FieldDescriptor("provision_rules")
     brands = FieldDescriptor("brands")
     upload_brand = FieldDescriptor("upload_brand")
@@ -229,78 +238,68 @@ class Document(DatabaseObject):
         self._context.documents._remove_from_changed(self)
 
 
+class PublicationReferences(object):
+    def __init__(self, document, publication_type):
+        self._document = document
+        self._publication_type = publication_type
+
+    def __getitem__(self, key):
+        return self._document.context.gjp.get_record_reference(self._document.isbns[self._publication_type], app_name=key)
+
+
+class DocumentReferences(object):
+    def __init__(self,
+                 document):
+        self._document = document
+
+    @property
+    def epub(self):
+        return PublicationReferences(self._document, PublicationType.epub)
+
+    @property
+    def pdf(self):
+        return PublicationReferences(self._document, PublicationType.pdf)
+
+    @property
+    def mobi(self):
+        return PublicationReferences(self._document, PublicationType.mobi)
+
+    @property
+    def pod(self):
+        return PublicationReferences(self._document, PublicationType.pod)
+    
+    def __getitem__(self, key):
+        if key in PublicationType:
+            return getattr(self, key.identifier)
+        elif PublicationType.find(key) is not None:
+            return getattr(self, key)
+        
 class DocumentOnix(FieldGroup):
     def __init__(self,
                  document):
         super(DocumentOnix, self).__init__(document)
-        self._fields["onix_references"] = OnixReferencesGroup(document)
         self._document = document
 
-    references = FieldDescriptor("onix_references")
+    @property
+    def references(self):
+        return DocumentReferences(self._document)
 
     def download(self,
                  publication_type,
-                status=OnixStatus.current,
-                 onix_style=OnixStyle.default,
-                 onix_type=None,
-                 codelist_issue=None,
-                 subject_keyword_in_separate_tag=False):
+                 **kwargs):
         return self._document.context.onix.download(documents_ids=[self._document.document_id],
                                                     publication_type=publication_type,
-                                                    status=status,
-                                                    onix_style=onix_style,
-                                                    onix_type=onix_type,
-                                                    codelist_issue=codelist_issue,
-                                                    subject_keyword_in_separate_tag=subject_keyword_in_separate_tag)
+                                                    **kwargs)
 
     def save(self,
              publication_type,
              filename=None,
-             status=OnixStatus.current,
-             onix_style=OnixStyle.default,
-             onix_type=None,
-             codelist_issue=None,
-             subject_keyword_in_separate_tag=False):
+             **kwargs):
         self._document.context.onix.save(filename=filename,
                                          documents_ids=[self._document.document_id],
                                          publication_type=publication_type,
-                                         status=status,
-                                         onix_style=onix_style,
-                                         onix_type=onix_type,
-                                         codelist_issue=codelist_issue,
-                                         subject_keyword_in_separate_tag=subject_keyword_in_separate_tag)
+                                         **kwargs)
 
-        
-class OnixReferencesGroup(FieldGroup):
-    def __init__(self,
-                 document):
-        super(OnixReferencesGroup, self).__init__(document)
-        self._fields["epub"] = SimpleField(database_object=document,
-                                           aspect='onix.*',
-                                           dtype=str,
-                                           field_locator='onix.record_references.epub',
-                                           nullable=True)
-        self._fields["mobi"] = SimpleField(database_object=document,
-                                           aspect='onix',
-                                           dtype=str,
-                                           field_locator='onix.record_references.mobi',
-                                           nullable=True)
-        self._fields["pdf"] = SimpleField(database_object=document,
-                                          aspect='onix',
-                                          dtype=str,
-                                          field_locator='onix.record_references.pdf',
-                                          nullable=True)
-        self._fields["pod"] = SimpleField(database_object=document,
-                                          aspect='onix',
-                                          dtype=str,
-                                          field_locator='onix.record_references.pod',
-                                          nullable=True)
-                                          
-
-    epub = FieldDescriptor("epub")
-    mobi = FieldDescriptor("mobi")
-    pdf = FieldDescriptor("pdf")
-    pod = FieldDescriptor("pod")
 
 class OwnerField(DatabaseObjectField):
     def __init__(self,

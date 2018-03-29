@@ -53,9 +53,8 @@ class ExpectedPublishDateGroup(FieldGroup):
 class PublishDateGroup(FieldGroup):
     def __init__(self, document):
         super(PublishDateGroup, self).__init__(document)
-        self._fields["ebook"] = SimpleField(
+        self._fields["ebook"] = IsoDateFieldField(
             database_object=document,
-            dtype=datetime.date,
             aspect="ebook.*",
             field_locator="ebook.publish_date")
 

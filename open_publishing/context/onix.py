@@ -14,6 +14,8 @@ class Onix(object):
                  status=OnixStatus.current,
                  onix_style=OnixStyle.default,
                  onix_type=None,
+                 support_preorder=True,
+                 contract_type=None,
                  codelist_issue=None,
                  subject_keyword_in_separate_tag=False):
         if onix_style not in OnixStyle:
@@ -30,12 +32,14 @@ class Onix(object):
             documents_ids = [Document.id_from_guid(guid) for guid in guids]
 
         data, headers =  self._ctx.gjp.request_onix(documents_ids,
-                                                       publication_type,
-                                                       status=status,
-                                                       onix_style=onix_style,
-                                                       onix_type=onix_type,
-                                                       codelist_issue=codelist_issue,
-                                                       subject_keyword_in_separate_tag=subject_keyword_in_separate_tag)
+                                                    publication_type,
+                                                    status=status,
+                                                    onix_style=onix_style,
+                                                    onix_type=onix_type,
+                                                    support_preorder=support_preorder,
+                                                    contract_type=contract_type,
+                                                    codelist_issue=codelist_issue,
+                                                    subject_keyword_in_separate_tag=subject_keyword_in_separate_tag)
         return Content(data, headers)
         
     def save(self,

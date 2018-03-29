@@ -3,7 +3,7 @@ from .core import FieldDescriptor
 from .core import FieldGroup
 from .core import SimpleField
 
-from .core.enums import ValueStatus, FieldKind, IsbnType
+from .core.enums import ValueStatus, FieldKind, IsbnType, PublicationType
 
 class IsbnField(Field):
     def __init__(self,
@@ -96,6 +96,12 @@ class IsbnGroup(FieldGroup):
     mobi = FieldDescriptor('mobi')
     pod = FieldDescriptor('pod')
     related = FieldDescriptor('related')
+
+    def __getitem__(self, key):
+        if key in PublicationType:
+            return getattr(self, key.identifier)
+        elif PublicationType.find(key) is not None:
+            return getattr(self, key)
 
     def assign(self,
                isbn_type,

@@ -25,6 +25,7 @@ from .core.enums import ChildrenFlag as children_flag
 from .core.enums import AcademicCategory as academic_category
 
 from .core.enums import Language as language
+from .core.enums import DRM as drm
 from .core.enums import VLBCategory as vlb_category
 from .core.enums import Country as country
 from .core.enums import ContributorRole as role
@@ -62,7 +63,7 @@ from .core.enums import ShippingLevel as _shipping_level
 
 from .core.enums import ProcessingType as processing
 
-from .assets import AssetNotReady, AssetExpired
+from .assets import AssetNotReady, AssetExpired, AssetNotFound
 from .gjp import ObjectNotFound, TemporaryNotAvailable, AssetCreationError
 
 from .order import Address as _address

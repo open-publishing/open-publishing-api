@@ -302,6 +302,81 @@ ContributorRole = ExtendableEnum(author = 'A01',
                                  actor = 'E01',
                                  dancer  = 'E02')
 
+
+# see codelist 38 ( documentation/onix/3.0/codelists/onix-codelist-38.htm )
+MediaFileTypeCode = Enum(whole_product = 1,
+                         application_software_demo = 2,
+                         image_whole_cover = 3,
+                         image_front_cover = 4,
+                         image_whole_cover_high_quality = 5,
+                         image_front_cover_high_quality = 6,
+                         image_front_cover_thumbnail = 7,
+                         image_contributors = 8,
+                         image_for_series = 10,
+                         image_series_logo = 11,
+                         image_product_logo = 12,
+                         image_Master_brand_logo = 16,
+                         image_publisher_logo = 17,
+                         image_imprint_logo = 18,
+                         image_table_of_contents = 22,
+                         image_sample_content = 23,
+                         image_back_cover = 24,
+                         image_back_cover_high_quality = 25,
+                         image_back_cover_thumbnail = 26,
+                         image_other_cover_material = 27,
+                         image_promotional_material = 28,
+                         video_segment_unspecified = 29,
+                         audio_segment_unspecified = 30,
+                         video_author_presentation_commentary = 31,
+                         video_author_interview = 32,
+                         video_author_reading = 33,
+                         video_cover_material = 34,
+                         video_sample_content = 35,
+                         video_promotional_material = 36,
+                         video_review = 37,
+                         video_other_commentary_discussion = 38,
+                         audio_author_presentation_commentary = 41,
+                         audio_author_interview = 42,
+                         audio_author_reading = 43,
+                         audio_sample_content = 44,
+                         audio_promotional_material = 45,
+                         audio_review = 46,
+                         audio_other_commentary_discussion = 47,
+                         application_sample_content = 51,
+                         application_promotional_material = 52)
+
+
+# see codelist 39 ( documentation/onix/3.0/codelists/onix-codelist-39.htm )
+MediaFileFormatCode = Enum(gif=2,
+                           jpg=3,
+                           pdf=4,
+                           tif = 5,
+                           realaudio = 6,
+                           mp3  = 7,
+                           mpeg4 = 8,
+                           png = 9,
+                           wma = 10,
+                           aac = 11,
+                           wav = 12,
+                           aiff = 13,
+                           wmv = 14,
+                           ogg = 15,
+                           avi = 16,
+                           mov = 17,
+                           flash=18,
+                           video3gp = 19,
+                           webm = 20)
+
+
+# see codelist 40 ( documentation/onix/3.0/codelists/onix-codelist-40.htm )
+MediaFileLinkTypeCode = Enum(url = 1,
+                             doi = 2,
+                             purl = 3,
+                             urn = 4,
+                             ftp = 5,
+                             filename = 5)
+
+
 BisacCode = ExtendableEnum(architecture= 'ARC000000',
                            art = 'ART000000',
                            computers = 'COM000000',
@@ -496,6 +571,7 @@ ProvisionChannelBase = Enum(net_price = 'NET_PRICE',
                             gross_margin = 'GROSS_MARGIN')
 
 UsersSearchType = Enum(email = 'email',
+                       all_email = 'all_email',
                        user_id = 'user-id',
                        name = 'name')
 
@@ -710,4 +786,10 @@ ShippingLevel = Enum(next_day = 'NextDay',
 ProcessingType = Enum(auto = 'AUTO',
                       yes = 'YES',
                       no = 'NO')
+
+DRM = Enum(auto = 'AUTO',
+           no = 'NO',
+           watermark = 'WATERMARK',
+           drm = 'DRM',
+           adobe_drm = 'ADOBE_DRM')
 

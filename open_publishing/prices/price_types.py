@@ -39,17 +39,20 @@ class PriceTypeBase(FieldGroup):
                          country_code,
                          price,
                          since,
-                         until):
+                         until,
+                         campaign):
                 self.country_code = country_code
                 self.price = price 
                 self.since = since
                 self.until = until
+                self.campaign = campaign
 
         for period in list(result.values())[0][self._price_locator.split('.')[-1]]:
             periods.append(Period(country_code,
                                   Price.from_gjp(period['price']),
                                   datetime.date(*period['from']) if period['from'] else None,
-                                  datetime.date(*period['until']) if period['until'] else None,))
+                                  datetime.date(*period['until']) if period['until'] else None,
+                                  period['campaign']))
         return periods
         
         

@@ -8,3 +8,7 @@ class Assets(object):
     def link(self, file_id):
         return AssetLink(self._ctx, file_id)
 
+
+    def enqueue_import(self, filename, alias = None):
+        self._ctx.gjp.enqueue_import(filename, alias)
+        

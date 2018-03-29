@@ -311,14 +311,16 @@ class GJP(object):
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['OBJECTS']
 
-    def _upload(self, file_name, upload_module, upload_method, rpc_parameter = {}):
+    def _upload(self, file_name, upload_module, upload_method, alias_name = None, rpc_parameter = {}):
 
         params = {
             "method" : upload_method,
             "access_token" : self._ctx.api_key
         }
 
-        files = {'file': (file_name, open(file_name, 'rb'), mimetypes.guess_type(file_name))}
+        if alias_name is None:
+            alias_name = file_name
+        files = {'file': (alias_name, open(file_name, 'rb'), mimetypes.guess_type(file_name))}
 
         response = self._session.put(self._ctx.host + '/rpc/' + upload_module,
                                      data=rpc_parameter,
@@ -383,6 +385,18 @@ class GJP(object):
                     "reference_id":user_id}
                 )
 
+    def enqueue_import(self, file_name, alias_name):
+        self._upload(
+            file_name = file_name, 
+            alias_name = alias_name,
+            upload_module = "admin_asset_upload", 
+            upload_method = "upload", 
+            rpc_parameter = {
+                "filename": "text.xml", 
+                "response": "gjp"}
+        )
+
+        
     def download_from_archive(self, url):
         params = {
             "access_token" : self._ctx.api_key,
@@ -801,7 +815,7 @@ class GJP(object):
 
     @stubborn
     def get_me(self):
-        path = '/me'
+        path = '/rpc/me'
         params = {
             'access_token': self._ctx.api_key,
             }
@@ -886,18 +900,23 @@ class GJP(object):
                      status=OnixStatus.current,
                      onix_style=None,
                      onix_type=None,
+                     support_preorder=True,
+                     contract_type=None,
                      codelist_issue=None,
                      subject_keyword_in_separate_tag=False):
-        path = '/onix'
+        path = '/rpc/onix'
         params = {
             'access_token': self._ctx.api_key,
             'document_ids': ','.join([str(id) for id in documents_ids]),
             'publication_type': publication_type.identifier,
+            'support_preorder': 'yes' if support_preorder else 'no'
             }
         if onix_style is not None:
             params['style'] = onix_style.identifier
         if onix_type is not None:
             params['onix_type'] = onix_type.identifier
+        if contract_type:
+            params['contract_type'] = contract_type
         if codelist_issue is not None:
             params['codelist_issue'] = codelist_issue
         if subject_keyword_in_separate_tag:
@@ -949,14 +968,23 @@ class GJP(object):
     def create_file(self,
                     document_id,
                     asset_module,
+                    asset_priority=None,
+                    supports=None,
+                    exclude_tags=None,
                     **kwargs):
-        path = '/api/file'
+        path = '/rpc/asset_converter_control'
         params = {
             'access_token': self._ctx.api_key,
             'method': 'create',
             'document_id': document_id,
             'module' : asset_module.identifier,
             }
+        if asset_priority:
+            params['asset-priority'] = asset_priority
+        if supports is not None:
+            params['supports'] = ','.join(supports)
+        if exclude_tags is not None:
+            params['exclude-tags'] = ','.join(exclude_tags)
         params.update(kwargs)
 
         response = self._session.get(self._ctx.host + path,
@@ -967,9 +995,8 @@ class GJP(object):
 
     def request_file(self,
                      file_id):
-        path = '/api/file'
+        path = '/rpc/asset_converter_download'
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'download',
             'file_id': file_id,
         }
@@ -985,7 +1012,26 @@ class GJP(object):
         else:
             return 'ready', response.content, response.headers
 
+    def check_file(self,
+                   document_id,
+                   modules,
+                   modules_params):
+        path = '/rpc/asset_converter_control'
+        params = {
+            'access_token': self._ctx.api_key,
+            'method': 'availability',
+            'document_id': document_id,
+            'modules' : ','.join(modules)
+            }
+        params.update(modules_params)
 
+        response = self._session.get(self._ctx.host + path,
+                                     params=params,
+                                     **self._ctx.requests_kwargs)
+
+        return self._check_response(response)['result']['available']
+
+        
     def current_price(self, 
                       document_id,
                       product,
@@ -1006,6 +1052,17 @@ class GJP(object):
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['OBJECTS'][0]
         
+    def get_record_reference(self, ean, app_name):
+        params = {
+            'access_token' : self._ctx.api_key,
+            'ean' : ean,
+            'app_name' : app_name,
+            'method' : 'get'
+            }
+        response = self._session.put(self._ctx.host + '/rpc/record_reference',
+                                     params=params,
+                                     **self._ctx.requests_kwargs)
+        return self._check_response(response)['result']['record_reference']
 
     def _raise(self, error):
         def find_parameter(name):
