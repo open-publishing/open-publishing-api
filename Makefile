@@ -24,8 +24,8 @@ build:
 
 pypi:
 	# python3 setup.py register -r pypi
-	#@python3 setup.py sdist upload -r pypi
-	echo "Upload to pypi disabled"
+	@python3 setup.py sdist upload -r pypi
+	#echo "Upload to pypi disabled"
 
 pylint:
 	@pylint -j 8 --rcfile=.pylintrc open_publishing2 test/*.py *.py examples/*.py

@@ -265,6 +265,14 @@ class DocumentReferences(object):
         return PublicationReferences(self._document, PublicationType.mobi)
 
     @property
+    def audiobook(self):
+        return PublicationReferences(self._document, PublicationType.audiobook)
+
+    @property
+    def software(self):
+        return PublicationReferences(self._document, PublicationType.software)
+
+    @property
     def pod(self):
         return PublicationReferences(self._document, PublicationType.pod)
     

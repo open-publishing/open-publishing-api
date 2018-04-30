@@ -5,7 +5,7 @@ class PublicationsField(Field):
     def __init__(self,
                  document):
         super(PublicationsField, self).__init__(database_object=document,
-                                                aspect='ebook.*,book.*',
+                                                aspect='ebook.*,book.*,product_form.*',
                                                 kind = FieldKind.regular)
         self._value = None
     
@@ -32,10 +32,13 @@ class PublicationsField(Field):
             master_obj = self._master_object(gjp)
             if ('ebook' in master_obj
                 and 'book' in master_obj
+                and 'product_form' in master_obj
                 and 'epub_for_sale' in master_obj['ebook']
                 and 'mobi_for_sale' in master_obj['ebook']
                 and 'pdf_for_sale' in master_obj['ebook']
-                and 'book_for_sale' in master_obj['book']):
+                and 'book_for_sale' in master_obj['book']
+                and 'has_software' in master_obj['product_form']
+                and 'has_audiobook' in master_obj['product_form']):
                 self._value = set()
                 if master_obj['ebook']['epub_for_sale'] == True:
                     self._value.add(PublicationType.epub)
@@ -45,6 +48,10 @@ class PublicationsField(Field):
                     self._value.add(PublicationType.pdf)
                 if master_obj['book']['book_for_sale'] == True:
                     self._value.add(PublicationType.pod)
+                if master_obj['product_form']['has_software'] == True:
+                    self._value.add(PublicationType.software)
+                if master_obj['product_form']['has_audiobook'] == True:
+                    self._value.add(PublicationType.audiobook)
                 self._status = ValueStatus.soft
             
     def gjp(self,
@@ -54,8 +61,12 @@ class PublicationsField(Field):
                 gjp['ebook'] = {}
             if 'book' not in gjp:
                 gjp['book'] = {}
+            if 'product_form' not in gjp:
+                gjp['product_form'] = {}
             gjp['ebook']['epub_for_sale'] = PublicationType.epub in self._value
             gjp['ebook']['mobi_for_sale'] = PublicationType.mobi in self._value
             gjp['ebook']['pdf_for_sale'] = PublicationType.pdf in self._value
             gjp['book']['book_for_sale'] = PublicationType.pod in self._value
+            gjp['product_form']['has_software'] = PublicationType.software in self._value
+            gjp['product_form']['has_audiobook'] = PublicationType.audiobook in self._value
 

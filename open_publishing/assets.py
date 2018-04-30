@@ -9,15 +9,15 @@ from .gjp.stubbornness import RetryNotPossible
 from .content import Content
 
 class AssetNotReady(Exception):
-    pass 
+    pass
 
 class AssetExpired(RetryNotPossible, Exception):
-    pass 
+    pass
 
 class AssetNotFound(RetryNotPossible, Exception):
-    pass 
+    pass
 
-    
+
 class AssetLink(object):
     def __init__(self,
                  ctx,
@@ -67,7 +67,7 @@ class OriginalAssetLink(object):
         with open(file_name, 'wb') as f:
             f.write(self.download())
 
-            
+
 class AssetsGroup(FieldGroup):
     def __init__(self,
                  document):
@@ -76,7 +76,7 @@ class AssetsGroup(FieldGroup):
         self._fields['original'] = OriginalAssetsList(document)
 
     original = FieldDescriptor('original')
-        
+
 
     def _create_file(self, module, asset_priority, **params):
         file_id = self._document.context.gjp.create_file(self._document.document_id,
@@ -98,8 +98,8 @@ class AssetsGroup(FieldGroup):
              exclude_tags=None):
         if not isinstance(channel, str):
             raise ValueError('Channel should be string, got {0}'.format(channel))
-        return self._create_file(AssetsModules.epub, 
-                                 asset_priority=asset_priority, 
+        return self._create_file(AssetsModules.epub,
+                                 asset_priority=asset_priority,
                                  channel=channel,
                                  exclude_tags=exclude_tags)
 
@@ -111,6 +111,14 @@ class AssetsGroup(FieldGroup):
             asset_priority=None):
         return self._create_file(AssetsModules.pdf, asset_priority=asset_priority)
 
+    def audiobook(self,
+            asset_priority=None):
+        return self._create_file(AssetsModules.audiobook, asset_priority=asset_priority)
+
+    def software(self,
+            asset_priority=None):
+        return self._create_file(AssetsModules.software, asset_priority=asset_priority)
+
     def extract(self,
                 asset_priority=None,
                 supports=None):
@@ -119,31 +127,37 @@ class AssetsGroup(FieldGroup):
     def availability(self,
                      **kwargs):
         for key in kwargs:
-            if key not in ['cover', 'epub', 'mobi', 'pdf', 'extract']:
+            if key not in ['cover', 'epub', 'mobi', 'pdf', 'extract', 'audiobook', 'software']:
                 raise TypeError("availability() got an unexpected keyword argument '{}'".format(key))
         modules = []
         params = {}
         for module, module_params in kwargs.items():
             if params is not None:
                 modules.append(module)
-                params.update({module + '-' + key : value for key, value in module_params.items()})
+                params.update({module + '_' + key : value for key, value in module_params.items()})
 
         return self._document.context.gjp.check_file(self._document.document_id,
                                                      modules,
-                                                     params)
+                                                     **params)
 
 class OriginalAsset(SequenceItem):
     def __init__(self,
                  ctx,
                  file_name,
                  file_type,
+                 type_specification,
+                 tags,
+                 distribution_tags,
                  file_id,
                  md5,
                  timestamp):
         super(OriginalAsset, self).__init__(ValueStatus.soft)
         self._ctx = ctx
         self._file_name = file_name
-        self._file_type = file_type,
+        self._file_type = file_type
+        self._type_specification = type_specification
+        self._tags = tags
+        self._distribution_tags = distribution_tags
         self._file_id = file_id
         self._md5 = md5
         self._timestamp = timestamp
@@ -151,6 +165,18 @@ class OriginalAsset(SequenceItem):
     @property
     def file_type(self):
         return self._file_type
+
+    @property
+    def type_specification(self):
+        return self._type_specification
+
+    @property
+    def distribution_tags(self):
+        return self._distribution_tags
+
+    @property
+    def tags(self):
+        return self._tags
 
     @property
     def filename(self):
@@ -173,19 +199,25 @@ class OriginalAsset(SequenceItem):
         file_name = gjp['original_filename']
         file_id = gjp['id']
         file_type = gjp['type']
+        type_specification = gjp['type_specification']
+        tags = gjp['tags']
+        distribution_tags = gjp['distribution_tags']
         md5 = gjp['md5']
         timestamp = datetime.datetime.fromtimestamp(gjp['upload_timestamp'])
         return cls(database_object.context,
                    file_name,
                    file_type,
+                   type_specification,
+                   tags,
+                   distribution_tags,
                    file_id,
                    md5,
                    timestamp)
-    
+
 
 class OriginalAssetsList(SequenceField):
     _item_type = OriginalAsset
-    
+
     def __init__(self,
                  document):
         super(OriginalAssetsList, self).__init__(document,

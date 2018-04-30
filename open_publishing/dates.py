@@ -14,10 +14,12 @@ class DatesGroup(FieldGroup):
         self._fields['publication'] = PublishDateGroup(document)
         self._fields['expected_publication'] = ExpectedPublishDateGroup(document)
         self._fields['preorder'] = PreorderGroup(document)
+        self._fields['on_sale'] = OnSaleDateGroup(document)
 
     publication = FieldDescriptor("publication")
     expected_publication = FieldDescriptor("expected_publication")
     preorder = FieldDescriptor("preorder")
+    on_sale = FieldDescriptor("on_sale")
 
 
 class PreorderGroup(FieldGroup):
@@ -50,6 +52,23 @@ class ExpectedPublishDateGroup(FieldGroup):
     ebook = FieldDescriptor("ebook")
 
 
+class OnSaleDateGroup(FieldGroup):
+    def __init__(self,
+                 document):
+        super(OnSaleDateGroup, self).__init__(document)
+        self._fields["ebook"] = IsoDateFieldField(database_object=document,
+                                                  aspect="on_sale_date.*",
+                                                  field_locator="on_sale_date.ebook",
+                                                  kind=FieldKind.readonly)
+
+        self._fields["book"] = IsoDateFieldField(database_object=document,
+                                                 aspect="on_sale_date.*",
+                                                 field_locator="on_sale_date.book",
+                                                 kind=FieldKind.readonly)
+
+    book = FieldDescriptor("book")
+    ebook = FieldDescriptor("ebook")
+    
 class PublishDateGroup(FieldGroup):
     def __init__(self, document):
         super(PublishDateGroup, self).__init__(document)
@@ -65,12 +84,13 @@ class IsoDateFieldField(SimpleField):
     def __init__(self,
                  database_object,
                  aspect,
-                 field_locator):
+                 field_locator,
+                 kind=FieldKind.regular):
         super(IsoDateFieldField, self).__init__(database_object,
                                                 aspect=aspect,
                                                 field_locator=field_locator,
                                                 dtype=datetime.date,
-                                                kind=FieldKind.regular,
+                                                kind=kind,
                                                 nullable=True)
 
     def _parse_value(self,

@@ -855,7 +855,8 @@ class GJP(object):
                       target,
                       action,
                       type,
-                      note = None):
+                      note=None,
+                      uuid=None):
         path = '/rpc/event'
         params = {
             'access_token': self._ctx.api_key,
@@ -865,6 +866,7 @@ class GJP(object):
             'action': action.identifier,
             'type':  type.identifier,
             'note': note,
+            'uuid': uuid
             }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
@@ -895,21 +897,16 @@ class GJP(object):
         self._check_response(response)
         
     def request_onix(self,
-                     documents_ids,
-                     publication_type,
+                     products,
                      status=OnixStatus.current,
                      onix_style=None,
                      onix_type=None,
-                     support_preorder=True,
                      contract_type=None,
                      codelist_issue=None,
                      subject_keyword_in_separate_tag=False):
         path = '/rpc/onix'
         params = {
-            'access_token': self._ctx.api_key,
-            'document_ids': ','.join([str(id) for id in documents_ids]),
-            'publication_type': publication_type.identifier,
-            'support_preorder': 'yes' if support_preorder else 'no'
+            'access_token': self._ctx.api_key
             }
         if onix_style is not None:
             params['style'] = onix_style.identifier
@@ -922,8 +919,21 @@ class GJP(object):
         if subject_keyword_in_separate_tag:
             params['subject_keyword_in_separate_tag'] = 'yes'
         params['publication_status'] = status.identifier
+
+        resources = []
+        for product in products:
+            resource = {
+                'document_id': product.document_id,
+                'publication_type': product.publication_type.identifier,
+            }
+            if product.availability is not None:
+                resource['availability'] = product.availability
+            resources.append(resource)
+
+        data = {'resources': resources}
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     data=json.dumps(data),
                                      **self._ctx.requests_kwargs)
         self._check_status_code(response)
 
@@ -971,6 +981,7 @@ class GJP(object):
                     asset_priority=None,
                     supports=None,
                     exclude_tags=None,
+                    include_tags=None,
                     **kwargs):
         path = '/rpc/asset_converter_control'
         params = {
@@ -985,6 +996,8 @@ class GJP(object):
             params['supports'] = ','.join(supports)
         if exclude_tags is not None:
             params['exclude-tags'] = ','.join(exclude_tags)
+        if include_tags is not None:
+            params['include-tags'] = ','.join(include_tags)
         params.update(kwargs)
 
         response = self._session.get(self._ctx.host + path,
@@ -1015,7 +1028,11 @@ class GJP(object):
     def check_file(self,
                    document_id,
                    modules,
-                   modules_params):
+                   epub_asset_priority=None,
+                   epub_supports=None,
+                   epub_exclude_tags=None,
+                   epub_include_tags=None,
+                   mobi_asset_priority=None):
         path = '/rpc/asset_converter_control'
         params = {
             'access_token': self._ctx.api_key,
@@ -1023,7 +1040,17 @@ class GJP(object):
             'document_id': document_id,
             'modules' : ','.join(modules)
             }
-        params.update(modules_params)
+
+        if epub_asset_priority is not None:
+            params['epub-asset-priority'] = epub_asset_priority
+        if epub_supports is not None:
+            params['epub-supports'] = ','.join(epub_supports)
+        if epub_exclude_tags is not None:
+            params['epub-exclude-tags'] = ','.join(epub_exclude_tags)
+        if epub_include_tags is not None:
+            params['epub-include-tags'] = ','.join(epub_include_tags)
+        if mobi_asset_priority is not None:
+            params['mobi-asset-priority'] = ','.join(mobi_asset_priority)
 
         response = self._session.get(self._ctx.host + path,
                                      params=params,

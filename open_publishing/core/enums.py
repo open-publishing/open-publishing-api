@@ -408,6 +408,8 @@ FileType = Enum(ebook_pdf = 'ebook_pdf',
                 ebook_epub = 'ebook_epub',
                 ebook_mobi = 'ebook_mobi',
                 pod_pdf = 'pod_pdf',
+                audiobook = 'audiobook',
+                software = 'software',
                 cover_pod_pdf_final = 'cover_pod_pdf_final',
                 cover_marketing_jpg = 'cover_marketing_jpg',
                 other = 'other')
@@ -425,6 +427,9 @@ EBookFileType = Enum(pdf = 'pdf',
                      epub = 'epub',
                      mobi = 'mobi')
 
+AudioBookFileType = Enum(audiobook = 'audiobook')
+SoftwareFileType = Enum(software = 'software')
+
 PreviewFileType = Enum(pdf= 'pdf',
                     html = 'html')
 
@@ -435,6 +440,8 @@ IsbnType = Enum(book = 'book',
                 epub = 'ebook::epub',
                 mobi = 'ebook::mobi',
                 pdf = 'ebook::pdf',
+                audiobook = 'audiobook',
+                software = 'software',
                 ebook = 'ebook')
 
 EventTarget = Enum(book = 'book',
@@ -443,6 +450,8 @@ EventTarget = Enum(book = 'book',
                    ebook = 'ebook',
                    epub = 'epub',
                    mobi = 'mobi',
+                   audiobook = 'audiobook',
+                   software = 'software',
                    raw_document = 'raw-document',
                    vlb_onix = 'vlb-onix',
                    preview = 'preview',
@@ -508,6 +517,8 @@ Subscription = Enum(author = 'author',
 PublicationType = Enum(pdf = 'pdf',
                        epub = 'epub',
                        mobi = 'mobi',
+                       audiobook = 'audiobook',
+                       software = 'software',
                        pod = 'pod')
 
 TaxType = Enum(vat_percentage = 'vat_percentage',
@@ -520,6 +531,9 @@ OnixStyle = Enum(amazon = 'amazon',
                  tolino = 'tolino',
                  knv = 'knv',
                  international = 'international',
+                 ceebo = 'ceebo',
+                 ciando = 'ciando',
+                 beam = 'beam',
                  default = 'default')
 
 OnixType = Enum(short = 'short',
@@ -753,6 +767,8 @@ AssetsCoverType = Enum(distribution = 'distribution')
 AssetsModules = Enum(cover = 'cover',
                      epub = 'epub',
                      mobi = 'mobi',
+                     audiobook = 'audiobook',
+                     software = 'software',
                      pdf = 'pdf',
                      extract = 'extract')
 

@@ -20,6 +20,8 @@ from .core.enums import PublicationType as publication
 from .core.enums import OnixStyle as _onixstyle
 from .core.enums import OnixType as _onixtype
 from .core.enums import OnixStatus as _onixstatus
+from .context.onix import OnixProduct as _onixproduct
+
 from .core.enums import AdultFlag as adult_flag
 from .core.enums import ChildrenFlag as children_flag
 from .core.enums import AcademicCategory as academic_category
@@ -90,6 +92,10 @@ class isbn(object):
         epub = _isbn.epub
         pdf = _isbn.pdf
         mobi = _isbn.mobi
+    class audiobook(object):
+        all = _isbn.audiobook
+    class software(object):
+        all = _isbn.software
 
 class files(object):
     ebook_filetype = _ebook_filetype
@@ -110,6 +116,7 @@ class onix(object):
     style = _onixstyle
     type = _onixtype
     status = _onixstatus
+    product = _onixproduct
     
 class provision(object):
     algorithm = _provision_algorithm

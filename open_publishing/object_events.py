@@ -16,27 +16,28 @@ class ObjectEvents(object):
                                                                filters=filters,
                                                                references=[self._database_object.guid])
 
-    def fetch(self,
+    def get(self,
               target = None,
               action = None,
               type = None,
               filters = None,
               since = None,
               till = None):
-        return self._database_object.context.events.fetch(target=target,
-                                                          action=action,
-                                                          type=type,
-                                                          filters=filters,
-                                                          references=[self._database_object.guid],
-                                                          since=since,
-                                                          till=till)
+        return self._database_object.context.events.get(target=target,
+                                                        action=action,
+                                                        type=type,
+                                                        filters=filters,
+                                                        references=[self._database_object.guid],
+                                                        since=since,
+                                                        till=till)
               
 
     def trigger(self,
                 target,
                 action,
                 type,
-                note = None):
+                note = None,
+                uuid = None):
         if target is not None and target not in EventTarget:
             raise ValueError('target should be on of op.events.target, got: {0}'.format(target))
 
@@ -50,7 +51,8 @@ class ObjectEvents(object):
                                                         target=target,
                                                         action=action,
                                                         type=type,
-                                                        note=note)
+                                                        note=note,
+                                                        uuid=uuid)
                                                  
     def log(self,
             target,

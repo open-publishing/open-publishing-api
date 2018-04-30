@@ -73,6 +73,46 @@ class EBookFiles(FilesBase):
                      file_name):
         super(EBookFiles, self)._upload(file_name, FileType.cover_marketing_jpg)
 
+class AudioBookFiles(FilesBase):
+    def __init__(self,
+                 document):
+        super(AudioBookFiles, self).__init__(document)
+
+
+    def upload_content(self,
+                       file_name,
+                       audiobook_file_type):
+        if audiobook_file_type not in AudioBookFileType:
+            raise ValueError('audiobook_file_type must one of op.files.audiobook_filetype, got {0}'.format(audiobook_file_type))
+        if audiobook_file_type is AudioBookFileType.audiobook:
+            super(AudioBookFiles, self)._upload(file_name, FileType.audiobook)
+        else:
+            raise RuntimeError("Unexpect audiobook_file_type {0}".format(audiobook_file_type))
+
+    def upload_cover(self,
+                     file_name):
+        super(AudiobookFiles, self)._upload(file_name, FileType.cover_marketing_jpg)
+
+class SoftwareFiles(FilesBase):
+    def __init__(self,
+                 document):
+        super(SoftwareFiles, self).__init__(document)
+
+
+    def upload_content(self,
+                       file_name,
+                       software_file_type):
+        if software_file_type not in SoftwareFileType:
+            raise ValueError('software_file_type must one of op.files.software_filetype, got {0}'.format(software_file_type))
+        if software_file_type is SoftwareFileType.software:
+            super(SoftwareFiles, self)._upload(file_name, FileType.software)
+        else:
+            raise RuntimeError("Unexpect software_file_type {0}".format(software_file_type))
+
+    def upload_cover(self,
+                     file_name):
+        super(SoftwareFiles, self)._upload(file_name, FileType.cover_marketing_jpg)
+
 class PODFiles(FilesBase):
     def __init__(self,
                  document):

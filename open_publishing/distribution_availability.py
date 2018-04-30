@@ -66,6 +66,14 @@ class PublicationsAvailability(object):
         return self._publications[PublicationType.mobi]
 
     @property
+    def audiobook(self):
+        return self._publications[PublicationType.audiobook]
+
+    @property
+    def software(self):
+        return self._publications[PublicationType.software]
+
+    @property
     def pod(self):
         return self._publications[PublicationType.pod]
 
