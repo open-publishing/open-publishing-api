@@ -920,17 +920,15 @@ class GJP(object):
             params['subject_keyword_in_separate_tag'] = 'yes'
         params['publication_status'] = status.identifier
 
-        resources = []
-        for product in products:
-            resource = {
-                'document_id': product.document_id,
-                'publication_type': product.publication_type.identifier,
-            }
-            if product.availability is not None:
-                resource['availability'] = product.availability
-            resources.append(resource)
-
-        data = {'resources': resources}
+        data = {
+            'resources': [
+                {
+                    'document_id': product.document_id,
+                    'publication_type': product.publication_type.identifier,
+                    'availability': product.availability,
+                } for product in products
+            ]
+        }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
                                      data=json.dumps(data),

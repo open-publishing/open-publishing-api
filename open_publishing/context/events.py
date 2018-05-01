@@ -15,56 +15,50 @@ class Events(object):
             type=None,
             filters=None,
             since=None,
-            till=None):
+            till=None,
+            history=False):
+        """
+        Return specified events.
+
+        Since parameter filters all events since given timestamp.
+        Till parameter filters all events till given timestamp.
+        If history is set to False (default) per object only the latest event will be returned.
+        If history is set to True all events will be returned.
+        """
         event_types = self._get_event_types(target,
                                             action,
                                             type,
                                             filters)
-
-        if references is None:
-            pass
-        elif isinstance(references, (list, tuple)):
-            references = ','.join(references)
-        else:
-            raise TypeError('references: expected list or tuple, got: {0}'.format(type(references)))
-
-        if isinstance(since, (datetime.datetime, datetime.date)):
-            from_timestamp = int(time.mktime(since.timetuple()))
-        elif since is None:
-            from_timestamp = None
-        else:
-            raise TypeError('since should be datetime.datetime or datetime.date, got {0}'.format(since))
-
-        if isinstance(till, (datetime.datetime, datetime.date)):
-            to_timestamp = int(time.mktime(till.timetuple()))
-        elif till is None:
-            to_timestamp = None
-        else:
-            raise TypeError('till should be datetime.datetime or datetime.date, got {0}'.format(till))
-
-
-
-
-        response = self._ctx.gjp.fetch_events(method='list_status',
+        references = self._normalize_references(references)
+        from_timestamp = self._normalize_timestamp(since)
+        to_timestamp = self._normalize_timestamp(till)
+        method= 'history' if history else 'list_status'
+        response = self._ctx.gjp.fetch_events(method=method,
                                               event_types=event_types,
                                               references=references,
                                               from_timestamp=from_timestamp,
                                               to_timestamp=to_timestamp)
-
         execution_timestamp = datetime.datetime.fromtimestamp(response['execution_timestamp'])
         result = EventsList(execution_timestamp)
 
         def add_items(items):
             for item in items:
+                timestamp = None
+                if 'last_modified' in item:
+                    timestamp = item['last_modified']
+                if 'log_time' in item:
+                    timestamp = item['log_time']
                 result.append(EventsList.Event(target=EventTarget.from_id(item['target']),
                                                action=EventAction.from_id(item['action']),
                                                type=EventType.from_id(item['type']),
-                                               timestamp=datetime.datetime.fromtimestamp(item['last_modified']),
-                                               guid=(item['source_type'] + '.' + str(item['reference_id'])).lower()))
+                                               timestamp=datetime.datetime.fromtimestamp(timestamp),
+                                               guid=(item['source_type'] + '.' + str(item['reference_id'])).lower(),
+                                               app=item.get('app', None),
+                                               uuid=item.get('uuid', None)))
 
         add_items(response['items'])
         while 'resumption_token' in response:
-            response = self._ctx.gjp.fetch_events('list_status',
+            response = self._ctx.gjp.fetch_events(method=method,
                                                   resumption_token=response['resumption_token'])
             add_items(response['items'])
 
@@ -157,6 +151,22 @@ class Events(object):
                 event_types = ';'.join(event_types)
         return event_types
 
+    @staticmethod
+    def _normalize_timestamp(timestamp):
+        """Normalize timestamp to the format needed by API."""
+        if timestamp is None:
+            return None
+        if not isinstance(timestamp, (datetime.datetime, datetime.date)):
+            raise TypeError('since should be datetime.datetime or datetime.date, got {0}'.format(timestamp))
+        return int(time.mktime(timestamp.timetuple()))
+
+    @staticmethod
+    def _normalize_references(references):
+        if references is None:
+            return None
+        if not isinstance(references, (list, tuple)):
+            raise TypeError('references: expected list or tuple, got: {0}'.format(type(references)))
+        return ','.join(references)
 
 class EventsList(list):
     """List of Open Publishing Events."""
@@ -169,12 +179,16 @@ class EventsList(list):
                      action,
                      type,
                      timestamp,
-                     guid):
+                     guid,
+                     app=None,
+                     uuid=None):
             self._target = target
             self._action = action
             self._type = type
             self._timestamp = timestamp
             self._guid = guid
+            self._app = app
+            self._uuid = uuid
 
         @property
         def target(self):
@@ -195,6 +209,19 @@ class EventsList(list):
         @property
         def guid(self):
             return self._guid
+
+        @property
+        def app(self):
+            return self._app
+
+        @property
+        def uuid(self):
+            return self._uuid
+
+        def __repr__(self):
+            '''Returns representation of the object'''
+            return("{}(guid={}, target={}, action={}, type={}, app={})".format(self.__class__.__name__, self.guid, self.target, self.action, self.type, self.app))
+
 
     def __init__(self,
                  execution_timestamp):
