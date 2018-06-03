@@ -24,7 +24,8 @@ build:
 
 pypi:
 	# python3 setup.py register -r pypi
-	@python3 setup.py sdist upload -r pypi
+	# @python3 setup.py sdist upload -r pypi
+	@python3 setup.py sdist upload -r local
 	#echo "Upload to pypi disabled"
 
 pylint:
