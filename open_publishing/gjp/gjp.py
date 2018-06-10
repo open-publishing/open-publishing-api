@@ -392,7 +392,7 @@ class GJP(object):
             upload_module = "admin_asset_upload", 
             upload_method = "upload", 
             rpc_parameter = {
-                "filename": "text.xml", 
+                "filename": alias_name or file_name, 
                 "response": "gjp"}
         )
 
@@ -902,6 +902,7 @@ class GJP(object):
                      onix_style=None,
                      onix_type=None,
                      contract_type=None,
+                     country_codes=None,
                      codelist_issue=None,
                      subject_keyword_in_separate_tag=False):
         path = '/rpc/onix'
@@ -914,24 +915,29 @@ class GJP(object):
             params['onix_type'] = onix_type.identifier
         if contract_type:
             params['contract_type'] = contract_type
+        if country_codes:
+            params['country_codes'] = country_codes
         if codelist_issue is not None:
             params['codelist_issue'] = codelist_issue
         if subject_keyword_in_separate_tag:
             params['subject_keyword_in_separate_tag'] = 'yes'
         params['publication_status'] = status.identifier
 
-        data = {
-            'resources': [
-                {
-                    'document_id': product.document_id,
-                    'publication_type': product.publication_type.identifier,
-                    'availability': product.availability,
-                } for product in products
-            ]
-        }
+        resources = []
+        for product in products:
+            resource = {
+                'document_id': product.document_id,
+                'publication_type': product.publication_type.identifier,
+            }
+            if product.availability is not None:
+                resource['availability'] = product.availability
+            resources.append(resource)
+
+        data = {'resources': resources}
         response = self._session.get(self._ctx.host + path,
                                      params=params,
                                      data=json.dumps(data),
+                                     headers={'Content-Type': 'application/json'},
                                      **self._ctx.requests_kwargs)
         self._check_status_code(response)
 
@@ -1030,7 +1036,8 @@ class GJP(object):
                    epub_supports=None,
                    epub_exclude_tags=None,
                    epub_include_tags=None,
-                   mobi_asset_priority=None):
+                   mobi_asset_priority=None,
+                   ibooks_asset_priority=None):
         path = '/rpc/asset_converter_control'
         params = {
             'access_token': self._ctx.api_key,
@@ -1049,6 +1056,8 @@ class GJP(object):
             params['epub-include-tags'] = ','.join(epub_include_tags)
         if mobi_asset_priority is not None:
             params['mobi-asset-priority'] = ','.join(mobi_asset_priority)
+        if ibooks_asset_priority is not None:
+            params['ibooks-asset-priority'] = ','.join(ibooks_asset_priority)
 
         response = self._session.get(self._ctx.host + path,
                                      params=params,
@@ -1099,7 +1108,8 @@ class GJP(object):
         if error['ID'] == 'request_api_file_download::file_creating_error':
             raise AssetCreationError(error['LOCALE_STR'])
         else:
-            raise Exception(error['ID'])
+            message = error['LOCALE_STR'] if 'LOCALE_STR' in error else json.dumps(error)
+            raise Exception(error['ID'], message)
 
     def _check_status_code(self, response):
         if response.status_code == 409:

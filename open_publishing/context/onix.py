@@ -43,6 +43,7 @@ class Onix(object):
                  onix_type=None,
                  availability=None,
                  contract_type=None,
+                 country_codes=None,
                  codelist_issue=None,
                  subject_keyword_in_separate_tag=False):
         if onix_style not in OnixStyle:
@@ -66,6 +67,7 @@ class Onix(object):
                                                     onix_style=onix_style,
                                                     onix_type=onix_type,
                                                     contract_type=contract_type,
+                                                    country_codes=country_codes,
                                                     codelist_issue=codelist_issue,
                                                     subject_keyword_in_separate_tag=subject_keyword_in_separate_tag)
         return Content(data, headers)

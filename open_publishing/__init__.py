@@ -92,6 +92,7 @@ class isbn(object):
         epub = _isbn.epub
         pdf = _isbn.pdf
         mobi = _isbn.mobi
+        ibooks = _isbn.ibooks
     class audiobook(object):
         all = _isbn.audiobook
     class software(object):

@@ -107,6 +107,10 @@ class AssetsGroup(FieldGroup):
              asset_priority=None):
         return self._create_file(AssetsModules.mobi, asset_priority=asset_priority)
 
+    def ibooks(self,
+             asset_priority=None):
+        return self._create_file(AssetsModules.ibooks, asset_priority=asset_priority)
+
     def pdf(self,
             asset_priority=None):
         return self._create_file(AssetsModules.pdf, asset_priority=asset_priority)
@@ -127,7 +131,7 @@ class AssetsGroup(FieldGroup):
     def availability(self,
                      **kwargs):
         for key in kwargs:
-            if key not in ['cover', 'epub', 'mobi', 'pdf', 'extract', 'audiobook', 'software']:
+            if key not in ['cover', 'epub', 'mobi', 'ibooks', 'pdf', 'extract', 'audiobook', 'software']:
                 raise TypeError("availability() got an unexpected keyword argument '{}'".format(key))
         modules = []
         params = {}

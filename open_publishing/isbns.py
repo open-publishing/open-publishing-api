@@ -87,6 +87,8 @@ class IsbnGroup(FieldGroup):
                                          'epub')
         self._fields['mobi'] = IsbnField(document,
                                          'mobi')
+        self._fields['ibooks'] = IsbnField(document,
+                                         'ibooks')
         self._fields['audiobook'] = IsbnField(document,
                                          'audiobook')
         self._fields['software'] = IsbnField(document,
@@ -98,6 +100,7 @@ class IsbnGroup(FieldGroup):
     pdf = FieldDescriptor('pdf')
     epub = FieldDescriptor('epub')
     mobi = FieldDescriptor('mobi')
+    ibooks = FieldDescriptor('ibooks')
     audiobook = FieldDescriptor('audiobook')
     software = FieldDescriptor('software')
     pod = FieldDescriptor('pod')

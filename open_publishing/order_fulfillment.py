@@ -18,6 +18,7 @@ class OrderFulfillment(DatabaseObject):
                                              aspect='*',
                                              field_locator='status',
                                              dtype=ShippingStatus,
+                                             nullable=True,
                                              kind=FieldKind.readonly)
 
         self._fields['shippings'] = ShippingsList(order_fulfillment=self)

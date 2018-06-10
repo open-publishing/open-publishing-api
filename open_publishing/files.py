@@ -66,6 +66,8 @@ class EBookFiles(FilesBase):
             super(EBookFiles, self)._upload(file_name, FileType.ebook_pdf)
         elif ebook_file_type is EBookFileType.mobi:
             super(EBookFiles, self)._upload(file_name, FileType.ebook_mobi)
+        elif ebook_file_type is EBookFileType.ibooks:
+            super(EBookFiles, self)._upload(file_name, FileType.ebook_ibooks)
         else:
             raise RuntimeError("Unexpect ebook_file_type {0}".format(ebook_file_type))
 

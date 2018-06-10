@@ -13,29 +13,12 @@ class DatesGroup(FieldGroup):
         super(DatesGroup, self).__init__(document)
         self._fields['publication'] = PublishDateGroup(document)
         self._fields['expected_publication'] = ExpectedPublishDateGroup(document)
-        self._fields['preorder'] = PreorderGroup(document)
         self._fields['on_sale'] = OnSaleDateGroup(document)
 
     publication = FieldDescriptor("publication")
     expected_publication = FieldDescriptor("expected_publication")
-    preorder = FieldDescriptor("preorder")
     on_sale = FieldDescriptor("on_sale")
 
-
-class PreorderGroup(FieldGroup):
-    def __init__(self,
-                 document):
-        super(PreorderGroup, self).__init__(document)
-        self._fields["available_from"] = IsoDateFieldField(database_object=document,
-                                                           aspect="preorder.*",
-                                                           field_locator="preorder.preorder_available_from")
-
-        self._fields["enabled"] = SimpleField(database_object=document,
-                                                       aspect="preorder.*",
-                                                       field_locator="preorder.preorder_enabled",
-                                                       dtype=bool) 
-    available_from = FieldDescriptor("available_from")
-    enabled = FieldDescriptor("enabled")
 
 class ExpectedPublishDateGroup(FieldGroup):
     def __init__(self,
@@ -66,9 +49,22 @@ class OnSaleDateGroup(FieldGroup):
                                                  field_locator="on_sale_date.book",
                                                  kind=FieldKind.readonly)
 
+        self._fields["audiobook"] = IsoDateFieldField(database_object=document,
+                                                 aspect="on_sale_date.*",
+                                                 field_locator="on_sale_date.audiobook",
+                                                 kind=FieldKind.readonly)
+
+        self._fields["software"] = IsoDateFieldField(database_object=document,
+                                                 aspect="on_sale_date.*",
+                                                 field_locator="on_sale_date.software",
+                                                 kind=FieldKind.readonly)
+
     book = FieldDescriptor("book")
     ebook = FieldDescriptor("ebook")
-    
+    audiobook = FieldDescriptor("audiobook")
+    software = FieldDescriptor("software")
+
+
 class PublishDateGroup(FieldGroup):
     def __init__(self, document):
         super(PublishDateGroup, self).__init__(document)
@@ -97,8 +93,8 @@ class IsoDateFieldField(SimpleField):
                      value):
         if value is None and self._nullable:
             return value
-        else :
-            return datetime.date(*([int( a ) for a in value.split('-')]))
+        else:
+            return datetime.date(*([int(a) for a in value.split('-')]))
 
     def _serialize_value(self,
                          value):

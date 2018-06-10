@@ -35,6 +35,7 @@ class PublicationsField(Field):
                 and 'product_form' in master_obj
                 and 'epub_for_sale' in master_obj['ebook']
                 and 'mobi_for_sale' in master_obj['ebook']
+                and 'ibooks_for_sale' in master_obj['ebook']
                 and 'pdf_for_sale' in master_obj['ebook']
                 and 'book_for_sale' in master_obj['book']
                 and 'has_software' in master_obj['product_form']
@@ -44,6 +45,8 @@ class PublicationsField(Field):
                     self._value.add(PublicationType.epub)
                 if master_obj['ebook']['mobi_for_sale'] == True:
                     self._value.add(PublicationType.mobi)
+                if master_obj['ebook']['ibooks_for_sale'] == True:
+                    self._value.add(PublicationType.ibooks)
                 if master_obj['ebook']['pdf_for_sale'] == True:
                     self._value.add(PublicationType.pdf)
                 if master_obj['book']['book_for_sale'] == True:
@@ -65,6 +68,7 @@ class PublicationsField(Field):
                 gjp['product_form'] = {}
             gjp['ebook']['epub_for_sale'] = PublicationType.epub in self._value
             gjp['ebook']['mobi_for_sale'] = PublicationType.mobi in self._value
+            gjp['ebook']['ibooks_for_sale'] = PublicationType.ibooks in self._value
             gjp['ebook']['pdf_for_sale'] = PublicationType.pdf in self._value
             gjp['book']['book_for_sale'] = PublicationType.pod in self._value
             gjp['product_form']['has_software'] = PublicationType.software in self._value
