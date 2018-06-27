@@ -71,6 +71,7 @@ class PublicationsField(Field):
             gjp['ebook']['ibooks_for_sale'] = PublicationType.ibooks in self._value
             gjp['ebook']['pdf_for_sale'] = PublicationType.pdf in self._value
             gjp['book']['book_for_sale'] = PublicationType.pod in self._value
+            gjp['product_form']['has_ebook_ibooks'] = PublicationType.ibooks in self._value
             gjp['product_form']['has_software'] = PublicationType.software in self._value
             gjp['product_form']['has_audiobook'] = PublicationType.audiobook in self._value
 

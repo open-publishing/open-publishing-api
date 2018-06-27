@@ -5,8 +5,8 @@ from open_publishing.core import SimpleField
 
 from open_publishing.extendable_enum_field import ExtendableEnumField
 from open_publishing.genre import GenresList
+from open_publishing.bisac import BisacList
 
-from .bisac import BisacList
 from .thema import ThemaList
 from .subject import SubjectField
 

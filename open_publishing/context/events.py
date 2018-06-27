@@ -203,6 +203,10 @@ class EventsList(list):
             return self._type
 
         @property
+        def tuple(self):
+            return (self.target, self.action, self.type)
+
+        @property
         def timestamp(self):
             return self._timestamp
 

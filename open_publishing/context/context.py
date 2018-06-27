@@ -15,6 +15,7 @@ from .genres import Genres
 from .isbns import Isbns
 from .testdata import TestData
 from .assets import Assets
+from .bisac_subjects import BisacSubjects
 
 class Context(object):
     def __init__(self,
@@ -45,6 +46,7 @@ class Context(object):
         self._isbns = Isbns(self)
         self._testdata = TestData(self)
         self._assets = Assets(self)
+        self._bisac_subjects = BisacSubjects(self)
         self._brands = None
         self._territories = None
         self._me = None
@@ -117,6 +119,10 @@ class Context(object):
     @property
     def assets(self):
         return self._assets
+
+    @property
+    def bisac_subjects(self):
+        return self._bisac_subjects
 
     @property
     def brands(self):

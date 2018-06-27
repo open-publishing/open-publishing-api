@@ -46,7 +46,7 @@ class SequenceField(Field):
             found = True
             value = self._master_object(gjp)
             for fname in self._field_list_locator.split("."):
-                if fname in value:
+                if value is not None and fname in value:
                     value = value[fname]
                 else :
                     found = False

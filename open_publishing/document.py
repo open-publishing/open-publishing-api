@@ -17,6 +17,7 @@ from .assets import AssetsGroup
 from .isbns import IsbnGroup
 from .publications import PublicationsField
 from .dates import DatesGroup
+from .audio import AudioGroup
 from .audience import AudienceGroup
 from .extendable_enum_field import ExtendableEnumField
 from .object_events import ObjectEvents
@@ -138,6 +139,7 @@ class Document(DatabaseObject):
         self._fields["assets"] = AssetsGroup(self)
         self._fields["processing"] = ProcessingGroup(self)
         self._fields["onix"] = DocumentOnix(self)
+        self._fields["audio"] = AudioGroup(document=self)
 
         self._files = Files(self)
         self._events = ObjectEvents(self)
@@ -183,6 +185,7 @@ class Document(DatabaseObject):
     assets = FieldDescriptor("assets")
     processing = FieldDescriptor("processing")
     onix = FieldDescriptor("onix")
+    audio = FieldDescriptor("audio")
 
     @property
     def page_count(self):

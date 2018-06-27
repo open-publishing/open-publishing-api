@@ -44,7 +44,7 @@ class SimpleField(Field):
         if self._status is not ValueStatus.hard :
             value = self._master_object(gjp)
             for fname in self._field_locator.split("."):
-                if fname in value:
+                if value is not None and  fname in value:
                     value = value[fname]
                 else :
                     return

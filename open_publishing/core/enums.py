@@ -556,8 +556,10 @@ OnixStyle = Enum(amazon = 'amazon',
                  parkteam = 'parkteam',
                  pubdatanet = 'pubdatanet',
                  softdist = 'softdist',
+                 steinsche = 'steinsche',
                  tigerbooks = 'tigerbooks',
                  mojoreads = 'mojoreads',
+                 amzprint = 'amzprint',
                  default = 'default')
 
 OnixType = Enum(short = 'short',
@@ -786,7 +788,8 @@ ProfileShow = Enum(no = 'NO',
                    yes = 'YES',
                    default = 'DEFAULT')
 
-AssetsCoverType = Enum(distribution = 'distribution')
+AssetsCoverType = Enum(distribution = 'distribution',
+                       big = 'big')
 
 AssetsModules = Enum(cover = 'cover',
                      epub = 'epub',

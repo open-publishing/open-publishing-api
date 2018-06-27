@@ -1,6 +1,6 @@
 from open_publishing.core.enums import ValueStatus, FieldKind
 from open_publishing.core import Field, DatabaseObject, SimpleField, FieldDescriptor
-from .bisac import BisacSubject
+from open_publishing.bisac import BisacSubject
 
 class Subject(DatabaseObject):
     _object_class = 'subject'

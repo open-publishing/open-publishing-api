@@ -723,7 +723,19 @@ class GJP(object):
                                      params=params,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']
-                
+
+    def vlb_to_bisac(self, category_id):
+        params = {}
+        params["access_token"] = self._ctx.api_key
+        data = {}
+        data["category_id"] = category_id
+        data["method"] = "vlb_to_bisac"
+        response = self._session.get(self._ctx.host + '/api/enumerations',
+                                     data=data,
+                                     params=params,
+                                     **self._ctx.requests_kwargs)
+        return self._check_response(response)['result']
+    
 
     def _enumerations(self, data):
         params = {}

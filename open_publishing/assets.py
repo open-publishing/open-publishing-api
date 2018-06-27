@@ -104,8 +104,9 @@ class AssetsGroup(FieldGroup):
                                  exclude_tags=exclude_tags)
 
     def mobi(self,
+             channel,
              asset_priority=None):
-        return self._create_file(AssetsModules.mobi, asset_priority=asset_priority)
+        return self._create_file(AssetsModules.mobi, asset_priority=asset_priority, channel=channel)
 
     def ibooks(self,
              asset_priority=None):
@@ -144,6 +145,32 @@ class AssetsGroup(FieldGroup):
                                                      modules,
                                                      **params)
 
+class ImageAttributes(object):
+    def __init__(self,
+                 width,
+                 height):
+        self._width = width
+        self._height = height
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
+
+    @classmethod
+    def from_gjp(cls, gjp, database_object):
+        if gjp is not None:
+            width = gjp['width']
+            height = gjp['height']
+            return cls(width,
+                       height)
+        else:
+            return None
+        
+    
 class OriginalAsset(SequenceItem):
     def __init__(self,
                  ctx,
@@ -154,7 +181,8 @@ class OriginalAsset(SequenceItem):
                  distribution_tags,
                  file_id,
                  md5,
-                 timestamp):
+                 timestamp,
+                 image_attributes):
         super(OriginalAsset, self).__init__(ValueStatus.soft)
         self._ctx = ctx
         self._file_name = file_name
@@ -165,6 +193,7 @@ class OriginalAsset(SequenceItem):
         self._file_id = file_id
         self._md5 = md5
         self._timestamp = timestamp
+        self._image_attributes = image_attributes
 
     @property
     def file_type(self):
@@ -198,6 +227,10 @@ class OriginalAsset(SequenceItem):
     def timestamp(self):
         return self._timestamp
 
+    @property
+    def image_attributes(self):
+        return self._image_attributes
+
     @classmethod
     def from_gjp(cls, gjp, database_object):
         file_name = gjp['original_filename']
@@ -208,6 +241,7 @@ class OriginalAsset(SequenceItem):
         distribution_tags = gjp['distribution_tags']
         md5 = gjp['md5']
         timestamp = datetime.datetime.fromtimestamp(gjp['upload_timestamp'])
+        image_attributes = ImageAttributes.from_gjp(gjp['image_attributes'], database_object)
         return cls(database_object.context,
                    file_name,
                    file_type,
@@ -216,7 +250,8 @@ class OriginalAsset(SequenceItem):
                    distribution_tags,
                    file_id,
                    md5,
-                   timestamp)
+                   timestamp,
+                   image_attributes)
 
 
 class OriginalAssetsList(SequenceField):

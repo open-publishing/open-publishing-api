@@ -9,6 +9,7 @@ class CurrentPrice(object):
     def __init__(self,
                  price_json):
         self._free = price_json['free']
+        self._price_fixed = price_json['price_fixed']
         if price_json['price'] is not None:
             self._price = Price.from_gjp(price_json['price'])
         else:
@@ -17,6 +18,10 @@ class CurrentPrice(object):
     @property
     def price(self):
         return self._price
+
+    @property
+    def price_fixed(self):
+        return self._price_fixed
 
     @property
     def free(self):
@@ -39,9 +44,20 @@ class PriceGroup(FieldGroup):
                                                                 price_types.NoPrice),
                                            price_locator="prices.ebook")
 
+        self._fields["audiobook"] = PriceField(document=document,
+                                               valid_price_types = (price_types.Manual,
+                                                                    price_types.NoPrice),
+                                               price_locator="prices.audiobook")
+
+        self._fields["software"] = PriceField(document=document,
+                                               valid_price_types = (price_types.Manual,
+                                                                    price_types.NoPrice),
+                                               price_locator="prices.software")
+        
     pod = FieldDescriptor("pod")
     ebook = FieldDescriptor("ebook")
-
+    audiobook= FieldDescriptor("audiobook")
+    software= FieldDescriptor("software")
 
     def recalculate(self):
         self.database_object.context.gjp.recalculate_prices(self.database_object.document_id)
