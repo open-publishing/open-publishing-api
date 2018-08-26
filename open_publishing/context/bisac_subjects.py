@@ -27,7 +27,9 @@ class BisacSubjects(object):
 
     def search(self,
                vlb_category):
-        if vlb_category in VLBCategory:
+        if vlb_category is None:
+            raise ValueError("vlb_category should not be None")
+        elif vlb_category in VLBCategory:
             category_id = self._ctx.gjp.resolve_enum(VLBCategory,
                                                      enum=vlb_category).internal_id
         else:

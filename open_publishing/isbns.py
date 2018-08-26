@@ -36,7 +36,7 @@ class IsbnField(Field):
                 value = None
                 break
         if value is not None:
-            if self._name in value:
+            if (self._name in value) and ('ean' in value[self._name]):
                 self._value = str(value[self._name]['ean'])
             else:
                 self._value = None

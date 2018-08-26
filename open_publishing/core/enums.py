@@ -96,8 +96,7 @@ FieldKind = Enum(regular = 'regular',
 
 DocumentStatus = Enum(published = 'PUBLISHED',
                       new = 'NEW',
-                      approved = 'APPROVED',
-                      unapproved =  'UNAPPROVED',
+                      unpublished = 'UNPUBLISHED',
                       deleted = 'DELETED')
 
 
@@ -470,12 +469,11 @@ EventAction = Enum(price_changed = 'price-changed',
                    created = 'created',
                    uploaded = 'uploaded',
                    changed = 'changed',
-                   approved = 'approved',
                    blocked = 'blocked',
                    deleted = 'deleted',
                    publication_availability_changed = 'publication-availability-changed',
                    published = 'published',
-                   unapproved = 'unapproved',
+                   unpublished = 'unpublished',
                    creation = 'creation',
                    subscribed = 'subscribed',
                    unsubscribed = 'unsubscribed',
@@ -568,7 +566,6 @@ OnixType = Enum(short = 'short',
 
 OnixStatus = Enum(current = 'current',
                   available = 'available',
-                  announced = 'announced',
                   unavailable = 'unavailable',
                   deleted = 'deleted',
                   blocked = 'blocked')
@@ -798,6 +795,7 @@ AssetsModules = Enum(cover = 'cover',
                      audiobook = 'audiobook',
                      software = 'software',
                      pdf = 'pdf',
+                     pod = 'pod',
                      extract = 'extract')
 
 BookBinding = Enum(auto = 'AUTO',

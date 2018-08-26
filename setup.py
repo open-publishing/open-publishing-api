@@ -7,7 +7,7 @@ REQUIRES = [
     'jsonschema'
 ]
 
-VERSION = '0.0.6'
+VERSION = '0.0.7'
 
 setup(
     name='open_publishing',

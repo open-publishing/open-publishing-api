@@ -204,8 +204,8 @@ class GJP(object):
                 params['new_status'] = 'new'
             if DocumentStatus.published in status:
                 params['published_status'] = 'published'
-            if DocumentStatus.unapproved in status:
-                params['unapproved_status'] = 'unapproved'
+            if DocumentStatus.unpublished in status:
+                params['unpublished_status'] = 'unpublished'
             if DocumentStatus.deleted in status:
                 params['del_status'] = 'deleted'
 
@@ -668,7 +668,7 @@ class GJP(object):
     def unpublish_document(self,
                            document_id):
         data = {
-            'method': 'unapprove',
+            'method': 'unpublish',
             'document_id': document_id,
             }
         self._document_rpc(data)

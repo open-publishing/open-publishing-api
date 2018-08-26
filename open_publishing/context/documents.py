@@ -78,7 +78,7 @@ class Documents(object):
         query - string query
 
         These are additional filters:
-        status - one of op.status.(new|published|unapproved|deleted)
+        status - one of op.status.(new|published|unpublished|deleted)
                  any subset of it in iterable container.
         created - instance of datetime.date for precice date, or tuple of two dates
                  (from_date, to_date). `from_date` or `to_date` can be None, in meaning of open

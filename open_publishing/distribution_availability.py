@@ -33,15 +33,10 @@ class DistributionAvailabilityField(Field):
 class PublicationAvailability(object):
     def __init__(self, data):
         self._for_sale = data['for_sale']
-        self._for_announcement = data['for_announcement']
 
     @property
     def for_sale(self):
         return self._for_sale
-
-    @property
-    def for_announcement(self):
-        return self._for_announcement
 
 
 class PublicationsAvailability(object):

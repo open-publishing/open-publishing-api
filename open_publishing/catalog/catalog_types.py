@@ -9,26 +9,29 @@ from open_publishing.bisac import BisacList
 
 from .thema import ThemaList
 from .subject import SubjectField
+from .series import SeriesList
 
 class CatalogTypeBase(FieldGroup):
     _catalog_type = None
     def __init__(self,
                  document):
         super(CatalogTypeBase, self).__init__(document)
-        self._fields['series'] = SeriesGroup(document)
+        self._fields['series'] = SeriesList(document)
+        self._fields['deprecated_series'] = DeprecatedSeriesGroup(document)
         self._fields['thema'] = ThemaList(document=document)
 
     series = FieldDescriptor('series')
+    deprecated_series = FieldDescriptor('deprecated_series')
     thema = FieldDescriptor('thema')
 
     @property
     def catalog_type(self):
         return self._catalog_type
 
-class SeriesGroup(FieldGroup):
+class DeprecatedSeriesGroup(FieldGroup):
     def __init__(self,
                  document):
-        super(SeriesGroup, self).__init__(document)
+        super(DeprecatedSeriesGroup, self).__init__(document)
         self._fields['title'] = SimpleField(database_object=document,
                                             aspect='extended_information.*',
                                             dtype=str,

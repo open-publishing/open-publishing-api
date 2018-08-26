@@ -81,18 +81,6 @@ class Document(DatabaseObject):
                                           field_locator="internal.drm",
                                           dtype=DRM)
         
-        self._fields["_page_count_technical"] = SimpleField(database_object=self,
-                                                            aspect="ebook.*",
-                                                            field_locator="ebook.page_count_technical",
-                                                            dtype=int,
-                                                            nullable=True,
-                                                            kind=FieldKind.readonly)
-
-        self._fields["_page_count_custom"] = SimpleField(database_object=self,
-                                                         aspect="ebook.*",
-                                                         field_locator="ebook.page_count_custom",
-                                                         dtype=int,
-                                                         nullable=True)
 
         self._fields["urls"] = URLsGroup(document=self)
 
@@ -140,6 +128,7 @@ class Document(DatabaseObject):
         self._fields["processing"] = ProcessingGroup(self)
         self._fields["onix"] = DocumentOnix(self)
         self._fields["audio"] = AudioGroup(document=self)
+        self._fields["page_count"] = PageCountGroup(document=self)
 
         self._files = Files(self)
         self._events = ObjectEvents(self)
@@ -152,8 +141,6 @@ class Document(DatabaseObject):
     self_publishing = FieldDescriptor("self_publishing")
     language = FieldDescriptor("language")
     drm = FieldDescriptor("drm")
-    _page_count_technical = FieldDescriptor("_page_count_technical")
-    _page_count_custom = FieldDescriptor("_page_count_custom")
     urls = FieldDescriptor("urls")
     excerpt = FieldDescriptor("excerpt")
     biographical_note = FieldDescriptor("biographical_note")
@@ -186,16 +173,8 @@ class Document(DatabaseObject):
     processing = FieldDescriptor("processing")
     onix = FieldDescriptor("onix")
     audio = FieldDescriptor("audio")
+    page_count = FieldDescriptor("page_count")
 
-    @property
-    def page_count(self):
-        if self._page_count_custom is not None:
-            return self._page_count_custom
-        return self._page_count_technical
-
-    @page_count.setter
-    def page_count(self, value):
-        self._page_count_custom = value
 
     @property
     def files(self):
@@ -220,10 +199,6 @@ class Document(DatabaseObject):
         
     def unpublish(self):
         self._context.gjp.unpublish_document(self.document_id)
-        self._fields["status"].invalidate()
-
-    def approve(self):
-        self._context.gjp.final_check_ok(self.document_id)
         self._fields["status"].invalidate()
 
     def delete(self):
@@ -689,3 +664,47 @@ class ProcessingGroup(FieldGroup):
     epub = FieldDescriptor('epub')
     pdf = FieldDescriptor('pdf')
     
+
+class PageCountGroup(FieldGroup):
+    def __init__(self,
+                 document):
+        super(PageCountGroup, self).__init__(document)
+        
+        self._fields["technical"] = SimpleField(database_object=document,
+                                                aspect="ebook.*",
+                                                field_locator="ebook.page_count_technical",
+                                                dtype=int)
+
+        self._fields["custom"] = SimpleField(database_object=document,
+                                             aspect="ebook.*",
+                                             field_locator="ebook.page_count_custom",
+                                             dtype=int,
+                                             nullable=True)
+
+        self._fields["arabic"] = SimpleField(database_object=document,
+                                             aspect="ebook.*",
+                                             field_locator="ebook.page_count_arabic",
+                                             dtype=int,
+                                             nullable=True)
+
+        self._fields["roman"] = SimpleField(database_object=document,
+                                            aspect="ebook.*",
+                                            field_locator="ebook.page_count_roman",
+                                            dtype=str,
+                                            nullable=True)
+        
+    technical = FieldDescriptor('technical')
+    custom = FieldDescriptor('custom')
+    arabic = FieldDescriptor('arabic')
+    roman = FieldDescriptor('roman')
+
+    @property
+    def final(self):
+        if self.custom is not None:
+            return self.custom
+        return self.technical
+    
+    @final.setter
+    def final(self, value):
+        self.custom = value
+
