@@ -952,8 +952,9 @@ class GJP(object):
                                      headers={'Content-Type': 'application/json'},
                                      **self._ctx.requests_kwargs)
         self._check_status_code(response)
-
-
+        if 'text/json' in response.headers.get('Content-Type', ''):
+            self._check_response(response)
+        
         return response.content, response.headers
 
     def allocate_isbns_block(self,
