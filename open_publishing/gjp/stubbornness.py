@@ -22,8 +22,11 @@ def _stubborn(delays):
                     return f(self, *args, **kwargs)
                 except RetryNotPossible:
                     raise
-                except:
-                    log.warning("{0} failed, retry in {1} sec\n{2}".format(f.__name__, delay, traceback.format_exc()))
+                except Exception as exp:
+                    if "AssetNotReady" in exp.__class__.__name__:
+                        log.warning("Asset not ready, retry in %i sec", delay)
+                    else:
+                        log.warning("%s failed, retry in %i sec\n%s", f.__name__, delay, traceback.format_exc())
                     event.wait(delay)
             return f(self, *args, **kwargs)
         return res
