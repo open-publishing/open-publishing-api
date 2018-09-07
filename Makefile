@@ -17,13 +17,17 @@ all:
 
 test:
 	nosetests
-test-docker:
+test-docker: check_env_devname
 	-docker rm open-publishing-tests-runner
 	docker build . -t open-publishing-tests
-	docker run --name=open-publishing-tests-runner open-publishing-tests --with-xunit --xunit-file=/results.xml
+	docker run -e APIHOST=api.$(NG_DEVNAME).dev.openpublishing.com --name=open-publishing-tests-runner open-publishing-tests --with-xunit --xunit-file=/results.xml
 	docker cp open-publishing-tests-runner:/results.xml .
 	docker rm open-publishing-tests-runner
 
+check_env_devname:
+ifndef NG_DEVNAME
+        $(error NG_DEVNAME not set.)
+endif
 
 build:
 	@python3 setup.py sdist --formats=gztar

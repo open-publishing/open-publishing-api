@@ -1,4 +1,5 @@
 """Unit tests for testing authentication."""
+import os
 from unittest import TestCase
 from nose.plugins.attrib import attr
 from open_publishing.gjp import AuthContext, AuthFailedException
@@ -10,7 +11,9 @@ class TestAuthentification(TestCase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.api_host = 'api.julius.dev.openpublishing.com'
+        if 'APIHOST' not in os.environ:
+            raise Exception("APIHOST not set in environment.")
+        self.api_host = os.environ['APIHOST']
 
     def setUp(self):
         pass
