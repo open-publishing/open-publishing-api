@@ -1,0 +1,5 @@
+pylint
+pydocstyle
+flake8
+nose
+requests

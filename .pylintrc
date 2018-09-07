@@ -1,0 +1,14 @@
+
+[MASTER]
+reports=no
+
+
+[MESSAGES CONTROL]
+disable=duplicate-code,fixme,locally-disabled,too-few-public-methods,too-many-instance-attributes,too-many-arguments
+
+[REPORTS]
+output-format=colorized
+
+[FORMAT]
+indent-string='    '
+max-line-length=150

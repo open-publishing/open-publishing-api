@@ -16,7 +16,14 @@ all:
 	@echo ""
 
 test:
-	PYTHONPATH="${PYTHONPATH}:/" python3 -m unittest discover -s test -p "*_test.py" -b
+	nosetests
+test-docker:
+	-docker rm open-publishing-tests-runner
+	docker build . -t open-publishing-tests
+	docker run --name=open-publishing-tests-runner open-publishing-tests --with-xunit --xunit-file=/results.xml
+	docker cp open-publishing-tests-runner:/results.xml .
+	docker rm open-publishing-tests-runner
+
 
 build:
 	@python3 setup.py sdist --formats=gztar

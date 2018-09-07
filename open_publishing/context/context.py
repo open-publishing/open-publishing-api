@@ -1,6 +1,7 @@
+"""Main Context object for initializing Open Publishing API."""
 import logging
 
-from open_publishing.gjp import GJP
+from open_publishing.gjp import GJP, AuthContext
 
 from .documents import Documents
 from .users import Users
@@ -17,14 +18,19 @@ from .testdata import TestData
 from .assets import Assets
 from .bisac_subjects import BisacSubjects
 
-class Context(object):
+
+class Context():
     def __init__(self,
-                 api_key,
-                 host,
-                 log = None,
-                 validate_json = False,
-                 requests_kwargs = None):
-        self._api_key = api_key
+                 api_key=None,
+                 host="api.openpublishing.com",
+                 log=None,
+                 validate_json=False,
+                 requests_kwargs=None):
+        """Initialize Context object."""
+        self._auth_context = AuthContext(api_host=host)
+        if api_key is not None:
+            self.auth(api_key=api_key)
+
         self._host = host
         if log:
             self._log = log.getChild('open_publishing')
@@ -32,7 +38,7 @@ class Context(object):
             self._log = logging.getLogger('open_publishing')
         if not self._host.startswith("https://"):
             self._host = "https://" + self._host
-        self._requests_kwargs = requests_kwargs if requests_kwargs else {} 
+        self._requests_kwargs = requests_kwargs if requests_kwargs else {}
         self._gjp = GJP(self, validate_json)
         self._documents = Documents(self)
         self._users = Users(self)
@@ -51,17 +57,23 @@ class Context(object):
         self._territories = None
         self._me = None
 
+    def auth(self, **args):
+        """Authentificate by forwarding to internal AuthContext object."""
+        self._auth_context.auth(**args)
 
     @property
-    def api_key(self):
-        return self._api_key
+    def auth_context(self):
+        """Return AuthContext."""
+        return self._auth_context
 
     @property
     def host(self):
+        """Return api host."""
         return self._host
 
     @property
     def log(self):
+        """Return log object."""
         return self._log
 
     @property
@@ -138,11 +150,11 @@ class Context(object):
         return self._territories.copy()
 
     @property
-    def me(self):
+    def me(self):  # pylint: disable=invalid-name
         if self._me is None:
             self._me = Me(self)
         return self._me
-        
+
     def __enter__(self):
         return self
 
@@ -154,6 +166,3 @@ class Context(object):
         self.documents.flush()
         self.users.flush()
         self.orders.flush()
-
-            
-            

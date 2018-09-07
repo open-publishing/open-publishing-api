@@ -130,15 +130,16 @@ class preview(object):
     display_mode = _preview_display_mode
     toc_visible = _preview_toc_visible
 
-def context(api_key,
-            host = "api.openpublishing.com",
-            auth = None,
-            timeout = 30,
-            proxies = None,
-            verify = None,
-            cert = None,
-            log = None,
+def context(api_key=None,
+            host="api.openpublishing.com",
+            auth=None,
+            timeout=30,
+            proxies=None,
+            verify=None,
+            cert=None,
+            log=None,
             validate_json = False):
+    """Generate Context object."""
     request_kwargs = {}
     if auth is not None:
         request_kwargs['auth'] = auth

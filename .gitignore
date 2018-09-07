@@ -1,3 +1,10 @@
 dist
 *.egg-info
 *.pyc
+bin
+lib
+lib64
+man
+share
+pip-selfcheck.json
+results.xml

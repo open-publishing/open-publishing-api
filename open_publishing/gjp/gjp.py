@@ -1,13 +1,13 @@
-import json
-import collections
-import datetime
-import requests
 import random
 import string
+import datetime
+import os
 import mimetypes
+import json
+import collections
+import requests
 import jsonschema
 import pkg_resources
-import os
 
 from open_publishing.core.enums import DocumentStatus, Language, Country, VLBCategory
 from open_publishing.core.enums import License, PreviewFileType, FileType, ContributorRole, BisacCode, ThemaCode, UsersSearchType
@@ -26,7 +26,7 @@ class AssetCreationError(RetryNotPossible, Exception):
 class TemporaryNotAvailable(Exception):
     pass
 
-class GJP(object):
+class GJP():
     def __init__(self,
                  ctx,
                  validate_json):
@@ -53,16 +53,13 @@ class GJP(object):
             'VERSION': version,
         }]
         data[0].update(gjp)
-        params = {
-            'access_token' : self._ctx.api_key,
-            } 
         headers = {
             'Content-type': 'application/json',
             'Accept': 'text/plain',
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token
             }
 
         response = self._session.put(self._ctx.host + path,
-                                     params=params,
                                      data=json.dumps(data),
                                      headers=headers,
                                      **self._ctx.requests_kwargs)
@@ -77,22 +74,19 @@ class GJP(object):
             gjp['GUID'] = gjp_info['guid']
             gjp['VERSION'] = gjp_info['version']
             data.append(gjp)
-        params = {
-            'access_token' : self._ctx.api_key,
-            } 
         headers = {
             'Content-type': 'application/json',
             'Accept': 'text/plain',
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + path,
-                                     params=params,
                                      data=json.dumps(data),
                                      headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_response(response, self._validate_json)
 
     @stubborn
-    def get(self, object_class, object_id, fields, params={}):
+    def get(self, object_class, object_id, fields, params=None):
         """ General method to retrieve a gjp object """
         if object_id is None:
             path = '/resource/v2/{object_class}[{fields}]'.format(object_class=object_class,
@@ -102,11 +96,12 @@ class GJP(object):
                                                                               object_id=object_id,
                                                                               fields=','.join(fields))
 
-        params['access_token'] = self._ctx.api_key
-
-        self.log.debug(path + '&' + ','.join(['='.join(str(item)) for item in list(params.items())]))
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+        }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response, self._validate_json)['OBJECTS']
 
@@ -117,34 +112,30 @@ class GJP(object):
             return {}
         fields_str = ','.join(fields)
         path = '/resource/v2/' + ','.join(['{guid}[{fields}]'.format(guid=guid,
-                                                                  fields=fields_str) for guid in set(guids)])
-        params = {
-            'access_token': self._ctx.api_key,
+                                                                     fields=fields_str) for guid in set(guids)])
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         self.log.debug(path + '&' + ','.join(['='.join(item) for item in list(params.items())]))
         response = self._session.get(self._ctx.host + path,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response, self._validate_json)['OBJECTS']
-            
 
     def delete(self, object_class, object_id):
         """ General method to delete a gjp object """
         path = '/resource/v2/{object_class}.{object_id}'.format(object_class=object_class,
-                                                             object_id=object_id)
-        params = {
-            'access_token': self._ctx.api_key,
+                                                                object_id=object_id)
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.delete(self._ctx.host + path,
-                                        params=params,
+                                        headers=headers,
                                         **self._ctx.requests_kwargs)
-        self._check_response(response, self._validate_json)        
+        self._check_response(response, self._validate_json)
 
     def create(self, object_class, **fields):
         """ General method to create a gjp object """
-        params = {
-            'access_token': self._ctx.api_key,
-            }
         data = [{
             'GUID': '{0}.'.format(object_class),
             'VERSION': 0,
@@ -153,16 +144,15 @@ class GJP(object):
         headers = {
             'Content-type': 'application/json',
             'Accept': 'text/plain',
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.post(self._ctx.host + '/resource/v2',
-                                      params=params,
                                       data=json.dumps(data),
                                       headers=headers,
                                       **self._ctx.requests_kwargs)
         gjp = self._check_response(response, self._validate_json)
         guid = gjp['RESULTS'][0]
         return gjp['OBJECTS'][guid]
-    
 
     @staticmethod
     def _encode_params(params):
@@ -175,18 +165,19 @@ class GJP(object):
         return res
 
     def documents_search(self,
-                         query = None,
-                         status = None,
-                         created = None,
-                         language = None,
-                         page_count = None,
-                         license = None):
+                         query=None,
+                         status=None,
+                         created=None,
+                         language=None,
+                         page_count=None,
+                         license=None):
         """ RPC to search entities"""
         params = {
-            'access_token': self._ctx.api_key,
             'display': 0,
             }
-        
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         if isinstance(query, str):
             params['query'] = query
         elif query is None:
@@ -222,12 +213,12 @@ class GJP(object):
                 params['created-date-from'] = created[0].strftime("%Y-%m-%d")
             if created[1] is not None:
                 params['created-date-to'] = created[1].strftime("%Y-%m-%d")
-        else :
+        else:
             raise ValueError("Invalid `created`")
 
         if language is None:
             pass
-        elif (language in Language):
+        elif language in Language:
             params['language_id'] = self.resolve_enum(Language, enum=language).internal_id
         elif isinstance(language, str) and len(language) == 3:
             params['language_id'] = self.resolve_enum(Language, code=language).internal_id
@@ -238,23 +229,20 @@ class GJP(object):
             def count_to_str(count):
                 if count is None:
                     return ""
-                elif isinstance(count, int):
+                if isinstance(count, int):
                     return str(count)
-                else :
-                    raise ValueError("Invalid page range")
-            
-            if t is None:
-                return ""
-            elif t == (None, None):
-                return ""
-            elif isinstance(t, int):
-                return str(t)
-            elif isinstance(t, tuple) and len(t) == 2:
-                return count_to_str(t[0]) + "-" + count_to_str(t[1])
-            else :
                 raise ValueError("Invalid page range")
 
-            
+            if t is None:
+                return ""
+            if t == (None, None):
+                return ""
+            if isinstance(t, int):
+                return str(t)
+            if isinstance(t, tuple) and len(t) == 2:
+                return count_to_str(t[0]) + "-" + count_to_str(t[1])
+            raise ValueError("Invalid page range")
+
         if page_count is None:
             pass
         elif isinstance(page_count, int):
@@ -279,15 +267,18 @@ class GJP(object):
 
         response = self._session.get(self._ctx.host + '/rpc/resource_search/admin-document/',
                                      params=self._encode_params(params),
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['OBJECTS']
 
     def users_search(self,
-                     query = None,
-                     search_type = None):
+                     query=None,
+                     search_type=None):
         """ RPC to search entities"""
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'display': 0,
             }
         data = {}
@@ -307,15 +298,18 @@ class GJP(object):
 
         response = self._session.get(self._ctx.host + '/rpc/resource_search/admin-user/',
                                      params=self._encode_params(params),
+                                     headers=headers,
                                      data=data,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['OBJECTS']
 
-    def _upload(self, file_name, upload_module, upload_method, alias_name = None, rpc_parameter = {}):
+    def _upload(self, file_name, upload_module, upload_method, alias_name=None, rpc_parameter=None):
 
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+        }
         params = {
             "method" : upload_method,
-            "access_token" : self._ctx.api_key
         }
 
         if alias_name is None:
@@ -326,134 +320,136 @@ class GJP(object):
                                      data=rpc_parameter,
                                      files=files,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
 
         self._check_response(response)
 
 
-    def preview_upload( self, document_id, file_name, preview_file_type):
+    def preview_upload(self, document_id, file_name, preview_file_type):
         if preview_file_type not in PreviewFileType:
-                raise ValueError("file_type should be one of op.files.filetype.*")
+            raise ValueError("file_type should be one of op.files.filetype.*")
 
         self._upload(
-                file_name     = file_name,
-                upload_module = "document_admin_preview_upload",
-                upload_method = "upload",
-                rpc_parameter = {
-                    "file_type":preview_file_type,
-                    "source_type":"document",
-                    "reference_id":document_id}
-                )
+            file_name=file_name,
+            upload_module="document_admin_preview_upload",
+            upload_method="upload",
+            rpc_parameter={
+                "file_type":preview_file_type,
+                "source_type":"document",
+                "reference_id":document_id}
+            )
 
 
-    def upload_asset( self, document_id, file_name, file_type ):
+    def upload_asset(self, document_id, file_name, file_type):
 
         if file_type not in FileType:
-             raise ValueError("file_type should be one of op.files.filetype.*")
+            raise ValueError("file_type should be one of op.files.filetype.*")
 
         self._upload(
-                file_name     = file_name,
-                upload_module = "document_admin_upload",
-                upload_method = "upload",
-                rpc_parameter = {
-                    "file_type":file_type.identifier,
-                    "document_id":document_id}
-                )
+            file_name=file_name,
+            upload_module="document_admin_upload",
+            upload_method="upload",
+            rpc_parameter={
+                "file_type":file_type.identifier,
+                "document_id":document_id}
+            )
 
 
-    def download_asset( self, file_id):
+    def download_asset(self, file_id):
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+        }
         params = {
-            'access_token' : self._ctx.api_key,
             'method' : 'download',
             'file_id' : file_id
             }
         response = self._session.get(self._ctx.host + '/rpc/document_admin_upload',
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_status_code(response)
         return response.content
 
-    def upload_avatar(self, user_id,  file_name):
+    def upload_avatar(self, user_id, file_name):
 
         self._upload(
-                file_name     = file_name,
-                upload_module = "upload_picture",
-                upload_method = "upload_picture",
-                rpc_parameter = {
-                    "response":"gjp",
-                    "source_type":"user",
-                    "reference_id":user_id}
-                )
+            file_name=file_name,
+            upload_module="upload_picture",
+            upload_method="upload_picture",
+            rpc_parameter={
+                "response": "gjp",
+                "source_type": "user",
+                "reference_id": user_id}
+            )
 
     def enqueue_import(self, file_name, alias_name):
         self._upload(
-            file_name = file_name, 
-            alias_name = alias_name,
-            upload_module = "admin_asset_upload", 
-            upload_method = "upload", 
-            rpc_parameter = {
-                "filename": alias_name or file_name, 
+            file_name=file_name,
+            alias_name=alias_name,
+            upload_module="admin_asset_upload",
+            upload_method="upload",
+            rpc_parameter={
+                "filename": alias_name or file_name,
                 "response": "gjp"}
         )
 
-        
     def download_from_archive(self, url):
-        params = {
-            "access_token" : self._ctx.api_key,
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
-        
         response = self._session.get(url,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_status_code(response)
         return response.content
 
     def _user_rpc(self, data):
-        params = {
-            'access_token' : self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + '/rpc/users',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
     def _price_periods_rpc(self, data):
-        params = {
-            'access_token': self._ctx.api_key
-        }
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         response = self._session.get(self._ctx.host + '/rpc/price_periods',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
     def get_price_periods(
-        self,
-        document_id,
-        country,
-        date_from=None,
-        date_to=None,
-        include_campains=True,
-        remove_outdated=None
+            self,
+            document_id,
+            country,
+            date_from=None,
+            date_to=None,
+            include_campains=True,
+            remove_outdated=None
     ):
         data = {
             'document_id': document_id,
         }
 
-        if (country in Country):
+        if country in Country:
             data['country_ids'] = self.resolve_enum(Country, enum=country).internal_id
-        elif isinstance(country, str) :
+        elif isinstance(country, str):
             data['country_ids'] = self.resolve_enum(Country, code=country).internal_id
         else:
             raise ValueError("Invalid `country`")
 
         if date_from:
             data['date_from'] = date_from
-            
+
         if date_to:
             data['date_to'] = date_to
-            
+
         if include_campains:
             data['include_campains'] = True
 
@@ -489,18 +485,20 @@ class GJP(object):
             }
         return self._user_rpc(data)['user_id']
 
-    def set_document_external_availability(self, name, country_code, document_id, publication_type, availability_status, availability, in_stock_quantity, price_cent, currency_code, shop_url):
+    def set_document_external_availability(self, name, country_code, document_id, publication_type,
+                                           availability_status, availability, in_stock_quantity,
+                                           price_cent, currency_code, shop_url):
         data = {
-                'method': 'report',
-                'name': name,
-                'country_code': country_code,
-                'document_id': document_id,
-                'publication_type': publication_type,
-                'availability_status': availability_status,
-                'availability': availability,
-                'in_stock_quantity': in_stock_quantity,
-                'shop_url': shop_url
-            }
+            'method': 'report',
+            'name': name,
+            'country_code': country_code,
+            'document_id': document_id,
+            'publication_type': publication_type,
+            'availability_status': availability_status,
+            'availability': availability,
+            'in_stock_quantity': in_stock_quantity,
+            'shop_url': shop_url
+        }
 
         if price_cent is not None:
             data['price_cent'] = price_cent
@@ -510,23 +508,23 @@ class GJP(object):
         self._document_external_availability_rpc(data)
 
     def _document_external_availability_rpc(self, data):
-        params = {
-            'access_token' : self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + '/rpc/document_external_availability',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
     def set_document_external_salesrank(self, name, country_code, document_id, publication_type, salesrank):
         data = {
-                'method': 'report',
-                'name': name,
-                'country_code': country_code,
-                'document_id': document_id,
-                'publication_type': publication_type
-            }
+            'method': 'report',
+            'name': name,
+            'country_code': country_code,
+            'document_id': document_id,
+            'publication_type': publication_type
+        }
 
         if salesrank is not None:
             data['salesrank'] = salesrank
@@ -534,25 +532,25 @@ class GJP(object):
         self._document_external_salesrank_rpc(data)
 
     def _document_external_salesrank_rpc(self, data):
-        params = {
-            'access_token' : self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + '/rpc/document_external_salesrank',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
     def set_document_external_rating(self, name, country_code, document_id, publication_type, average_rating, review_count, shop_review_url):
         data = {
-                'method': 'report',
-                'name': name,
-                'country_code': country_code,
-                'document_id': document_id,
-                'publication_type': publication_type,
-                'review_count': review_count,
-                'shop_review_url': shop_review_url
-            }
+            'method': 'report',
+            'name': name,
+            'country_code': country_code,
+            'document_id': document_id,
+            'publication_type': publication_type,
+            'review_count': review_count,
+            'shop_review_url': shop_review_url
+        }
 
         if average_rating is not None:
             data['average_rating'] = average_rating
@@ -560,32 +558,32 @@ class GJP(object):
         self._document_external_rating_rpc(data)
 
     def _document_external_rating_rpc(self, data):
-        params = {
-            'access_token' : self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + '/rpc/document_external_rating',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
     def _document_rpc(self, data):
-        params = {
-            'access_token' : self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + '/rpc/document',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
     def _testdata_rpc(self, data):
-        params = {
-            'access_token' : self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         response = self._session.put(self._ctx.host + '/rpc/testdata',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)
 
@@ -629,9 +627,9 @@ class GJP(object):
             'document_id': document_id,
             }
         self._document_rpc(data)
-        
+
     def final_check_ok(self,
-                           document_id):
+                       document_id):
         data = {
             'method': 'final_check_ok',
             'document_id': document_id,
@@ -648,13 +646,13 @@ class GJP(object):
 
     def testdata_create_license(self,
                                 short_name=None):
-        random_string = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))        
+        random_string = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
         data = {
             'method': 'create_test_license',
             'short_name': short_name if short_name else 'test-' + random_string
             }
         return self._testdata_rpc(data)['short_name']
-                                
+
     def testdata_init_testcase(self,
                                testcase_id,
                                testrun_id):
@@ -676,11 +674,11 @@ class GJP(object):
     def assign_isbn(self,
                     document_id,
                     isbn_type,
-                    ean = None):
+                    ean=None):
         data = {
             'type': isbn_type,
             'document_id': document_id,
-            }
+        }
         if ean:
             data['method'] = 'assign_isbn'
             data['ean'] = ean
@@ -698,60 +696,62 @@ class GJP(object):
 
     @stubborn
     def resolve_email(self, email):
-        params = {}
-        params["access_token"] = self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         data = {}
         data['method'] = 'resolve_email'
         data['email'] = email
-        
         response = self._session.put(self._ctx.host + '/api/users',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']
-                
+
     @stubborn
     def resolve_ean(self, ean):
-        params = {}
-        params["access_token"] = self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         data = {}
         data['method'] = 'resolve_ean'
         data['ean'] = ean
-        
+
         response = self._session.put(self._ctx.host + '/api/documents',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']
 
     def vlb_to_bisac(self, category_id):
-        params = {}
-        params["access_token"] = self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         data = {}
         data["category_id"] = category_id
         data["method"] = "vlb_to_bisac"
         response = self._session.get(self._ctx.host + '/api/enumerations',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']
-    
 
     def _enumerations(self, data):
-        params = {}
-        params["access_token"] = self._ctx.api_key
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         response = self._session.get(self._ctx.host + '/api/enumerations',
                                      data=data,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']
 
     @stubborn
     def resolve_enum(self,
                      dtype,
-                     enum = None,
-                     code = None,
-                     internal_id = None):
+                     enum=None,
+                     code=None,
+                     internal_id=None):
         data = {}
         if dtype is Language:
             data['method'] = 'language'
@@ -767,12 +767,12 @@ class GJP(object):
             data['method'] = 'thema_code'
         else:
             raise ValueError('Unexpected dtype {0}'.format(dtype))
-            
+
         if enum is not None:
             if enum in dtype:
                 data['code'] = enum.identifier
             else:
-                raise ValueError('expected one of dtype, got {0}', enum)
+                raise ValueError('expected one of dtype, got {}'.format(enum))
         elif code is not None:
             data['code'] = code
         elif internal_id is not None:
@@ -784,7 +784,7 @@ class GJP(object):
         if dtype not in self._enum_cache:
             self._enum_cache[dtype] = {}
         cache = self._enum_cache[dtype]
-            
+
         if cache_key not in cache:
             result = self._enumerations(data)
             IDs = collections.namedtuple("IDs", ['internal_id', 'enum', 'code'])
@@ -828,28 +828,27 @@ class GJP(object):
     @stubborn
     def get_me(self):
         path = '/rpc/me'
-        params = {
-            'access_token': self._ctx.api_key,
-            }
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token
+        }
         response = self._session.get(self._ctx.host + path,
-                                     params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['RESULT']
-        
 
-                
     @stubborn
     def fetch_events(self,
                      method,
-                     event_types = None,
-                     references = None,
-                     from_timestamp = None,
-                     to_timestamp = None,
-                     resumption_token = None):
-        
+                     event_types=None,
+                     references=None,
+                     from_timestamp=None,
+                     to_timestamp=None,
+                     resumption_token=None):
         path = '/rpc/event'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': method,
             'event_types': event_types,
             'refGUID': references,
@@ -859,9 +858,10 @@ class GJP(object):
             }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']
-        
+
     def trigger_event(self,
                       guid,
                       target,
@@ -870,8 +870,10 @@ class GJP(object):
                       note=None,
                       uuid=None):
         path = '/rpc/event'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'trigger',
             'refGUID': guid,
             'target': target.identifier,
@@ -882,19 +884,22 @@ class GJP(object):
             }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_response(response)
-        
+
     def log_event(self,
                   guid,
                   target,
                   action,
                   type,
                   result,
-                  note = None):
+                  note=None):
         path = '/rpc/event'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'log',
             'refGUID': guid,
             'target': target.identifier,
@@ -905,9 +910,10 @@ class GJP(object):
             }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_response(response)
-        
+
     def request_onix(self,
                      products,
                      status=OnixStatus.current,
@@ -918,8 +924,10 @@ class GJP(object):
                      codelist_issue=None,
                      subject_keyword_in_separate_tag=False):
         path = '/rpc/onix'
-        params = {
-            'access_token': self._ctx.api_key
+        params = {}
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            'Content-Type': 'application/json',
             }
         if onix_style is not None:
             params['style'] = onix_style.identifier
@@ -948,25 +956,27 @@ class GJP(object):
         data = {'resources': resources}
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      data=json.dumps(data),
-                                     headers={'Content-Type': 'application/json'},
                                      **self._ctx.requests_kwargs)
         self._check_status_code(response)
         if 'text/json' in response.headers.get('Content-Type', ''):
             self._check_response(response)
-        
         return response.content, response.headers
 
     def allocate_isbns_block(self,
                              prefix):
         path = '/rpc/isbn'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'import',
             'prefix': prefix,
             }
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_response(response)
 
@@ -974,24 +984,27 @@ class GJP(object):
                        document_id,
                        user_id,
                        license_short_name,
-                       ip,
+                       ip_address,
                        option):
         path = '/rpc/licenses'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'accept_api',
             'document_id': document_id,
             'user_id': user_id,
-            'ip': ip,
+            'ip': ip_address,
             'option': option,
             'license_text_short_name' : license_short_name,
             }
 
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         self._check_response(response)
-        
+
     def create_file(self,
                     document_id,
                     asset_module,
@@ -1001,8 +1014,10 @@ class GJP(object):
                     include_tags=None,
                     **kwargs):
         path = '/rpc/asset_converter_control'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'create',
             'document_id': document_id,
             'module' : asset_module.identifier,
@@ -1019,6 +1034,7 @@ class GJP(object):
 
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
 
         return self._check_response(response)['result']['file_id']
@@ -1037,10 +1053,9 @@ class GJP(object):
 
         self._check_status_code(response)
         if response.headers['content-type'].find('text/json') != -1:
-            json = self._check_response(response)
-            return json['result']['status'], None, None
-        else:
-            return 'ready', response.content, response.headers
+            response_json = self._check_response(response)
+            return response_json['result']['status'], None, None
+        return 'ready', response.content, response.headers
 
     def check_file(self,
                    document_id,
@@ -1052,8 +1067,10 @@ class GJP(object):
                    mobi_asset_priority=None,
                    ibooks_asset_priority=None):
         path = '/rpc/asset_converter_control'
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token': self._ctx.api_key,
             'method': 'availability',
             'document_id': document_id,
             'modules' : ','.join(modules)
@@ -1074,40 +1091,46 @@ class GJP(object):
 
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
 
         return self._check_response(response)['result']['available']
 
-        
-    def current_price(self, 
+    def current_price(self,
                       document_id,
                       product,
                       country_code,
-                      currency_code = None):
+                      currency_code=None):
         params = {
-            'access_token' : self._ctx.api_key,
             'method' : 'current',
             'document_id' : document_id,
             'product' : product,
             'country_code' : country_code,
+            }
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
         if currency_code is not None:
             params['currency_code'] = currency_code
 
         response = self._session.put(self._ctx.host + '/rpc/price',
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['OBJECTS'][0]
-        
+
     def get_record_reference(self, ean, app_name):
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
+            }
         params = {
-            'access_token' : self._ctx.api_key,
             'ean' : ean,
             'app_name' : app_name,
             'method' : 'get'
             }
         response = self._session.put(self._ctx.host + '/rpc/record_reference',
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
         return self._check_response(response)['result']['record_reference']
 
@@ -1117,7 +1140,7 @@ class GJP(object):
                 if name in param:
                     return param[name]
             return None
-        
+
         if error['ID'] == 'request_api_file_download::file_creating_error':
             raise AssetCreationError(error['LOCALE_STR'])
         else:
@@ -1152,8 +1175,5 @@ class GJP(object):
         if 'OK' in res_json:
             if 'FAILURES' in res_json['OK']:
                 self._raise(res_json['OK']['FAILURES'][0]['ERROR'])
-            else :
-                return res_json
-        else:
-            self._raise(res_json['ERROR'])
-
+            return res_json
+        self._raise(res_json['ERROR'])
