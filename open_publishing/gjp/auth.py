@@ -34,6 +34,8 @@ class AuthContext:
                                           are shared as docker secrets.
               realm_id                  : authenticate as world.
         """
+        self.auth_token = None
+        self.authenticated = False
         self.last_credentials = kwargs
         if 'email' in kwargs and 'password' in kwargs and 'realm_id' in kwargs:
             self._auth_user(email=kwargs['email'], password=kwargs['password'], realm_id=kwargs['realm_id'])
