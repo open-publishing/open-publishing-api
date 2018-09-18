@@ -100,7 +100,6 @@ class AuthContext:
             self.authenticated = False
             raise AuthException('Could not authenticate, incorrect status_code', status_code=req.status_code)
 
-        print(type(req.json()))
         req_json = req.json()
         if 'ERROR' in req_json:
             self.authenticated = False
