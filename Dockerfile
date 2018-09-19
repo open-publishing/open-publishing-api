@@ -6,7 +6,6 @@ EXPOSE 80
 
 # Define environment variable
 ENV FLASK_DEBUG 1
-ENV APIHOST api.openpublishing.com
 ENV COMMAND service
 
 # Set the working directory to /app
