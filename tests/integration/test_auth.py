@@ -4,6 +4,7 @@ from unittest import TestCase
 from nose.plugins.attrib import attr
 from open_publishing.gjp import AuthContext, AuthFailedException
 import open_publishing as op
+from test_utils import create_realm
 
 
 class TestAuthentification(TestCase):
@@ -128,5 +129,17 @@ class TestAuthentification(TestCase):
             self.assertEqual(ctx.me.user_name, None)
             self.assertEqual(ctx.me.realm_id, 1)
             self.assertEqual(ctx.me.realm_name, 'grin')
+            self.assertEqual(ctx.me.app_id, None)
+            self.assertEqual(ctx.me.app_name, None)
+
+    @attr("simple")
+    def test_new_realm(self):
+        """Test authentification within context with a newly created realm."""
+        new_realm = create_realm()
+        self.assertEqual(type(new_realm['realm_id']), int)
+        self.assertGreater(new_realm['realm_id'], 0)
+        with op.context(host=self.api_host, api_key=new_realm['api_key']) as ctx:
+            self.assertEqual(ctx.me.realm_id, new_realm['realm_id'])
+            self.assertEqual(ctx.me.realm_name, new_realm['realm_name'])
             self.assertEqual(ctx.me.app_id, None)
             self.assertEqual(ctx.me.app_name, None)
