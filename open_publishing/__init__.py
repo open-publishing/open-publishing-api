@@ -140,18 +140,28 @@ def context(api_key=None,
             log=None,
             validate_json = False):
     """Generate Context object."""
-    request_kwargs = {}
+    requests_kwargs = {}
     if auth is not None:
-        request_kwargs['auth'] = auth
+        requests_kwargs['auth'] = auth
     if timeout is not None:
-        request_kwargs['timeout'] = timeout
+        requests_kwargs['timeout'] = timeout
     if proxies is not None:
-        request_kwargs['proxies'] = proxies
+        requests_kwargs['proxies'] = proxies
     if verify is not None:
-        request_kwargs['verify'] = verify
+        requests_kwargs['verify'] = verify
     if cert is not None:
-        request_kwargs['cert'] = cert
-    return _Context(api_key, host, log, validate_json, request_kwargs)
+        requests_kwargs['cert'] = cert
+    if host.startswith('http://'):
+        host = 'https://' + host[7:]
+    elif host.startswith('https://'):
+        pass
+    else:
+        host = 'https://' + host
+    return _Context(host=host,
+                    api_key=api_key,
+                    log=log,
+                    validate_json=validate_json,
+                    requests_kwargs=requests_kwargs)
 
 class profile(object):
     show = _profile_show

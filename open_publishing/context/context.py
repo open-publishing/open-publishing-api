@@ -17,27 +17,28 @@ from .isbns import Isbns
 from .testdata import TestData
 from .assets import Assets
 from .bisac_subjects import BisacSubjects
+from .countries import Countries
 
 
 class Context():
     def __init__(self,
-                 api_key=None,
-                 host="api.openpublishing.com",
-                 log=None,
-                 validate_json=False,
-                 requests_kwargs=None):
+                 host,
+                 api_key,
+                 log,
+                 validate_json,
+                 requests_kwargs):
         """Initialize Context object."""
+        self._host = host
         self._auth_context = AuthContext(api_host=host)
+
         if api_key is not None:
             self.auth(api_key=api_key)
 
-        self._host = host
         if log:
             self._log = log.getChild('open_publishing')
         else:
             self._log = logging.getLogger('open_publishing')
-        if not self._host.startswith("https://"):
-            self._host = "https://" + self._host
+
         self._requests_kwargs = requests_kwargs if requests_kwargs else {}
         self._gjp = GJP(self, validate_json)
         self._documents = Documents(self)
@@ -53,6 +54,7 @@ class Context():
         self._testdata = TestData(self)
         self._assets = Assets(self)
         self._bisac_subjects = BisacSubjects(self)
+        self._countries = Countries(self)
         self._brands = None
         self._territories = None
         self._me = None
@@ -135,6 +137,10 @@ class Context():
     @property
     def bisac_subjects(self):
         return self._bisac_subjects
+
+    @property
+    def countries(self):
+        return self._countries
 
     @property
     def brands(self):

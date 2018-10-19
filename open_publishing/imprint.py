@@ -1,5 +1,6 @@
-from open_publishing.core.enums import ValueStatus, FieldKind
+from open_publishing.core.enums import ValueStatus, FieldKind, Country
 from open_publishing.core import Field, DatabaseObject, SimpleField, FieldDescriptor
+from open_publishing.extendable_enum_field import ExtendableEnumField
 
 class Imprint(DatabaseObject):
     _object_class = 'realm_imprint'
@@ -28,9 +29,27 @@ class Imprint(DatabaseObject):
                                                    dtype=str,
                                                    kind=FieldKind.readonly)
 
+        self._fields['publisher_city'] = SimpleField(database_object=self,
+                                                     aspect='*',
+                                                     field_locator='publisher_city',
+                                                     dtype=str,
+                                                     kind=FieldKind.readonly)                                           
+
+
+        self._fields['publisher_country'] = ExtendableEnumField(database_object=self,
+                                                                aspect='*',
+                                                                field_locator='publisher_country_id',
+                                                                dtype=Country,
+                                                                nullable=True,
+                                                                serialized_null=0,
+                                                                kind=FieldKind.readonly)
+        
+
     imprint_name = FieldDescriptor('imprint_name')
     publisher_name = FieldDescriptor('publisher_name')
     publisher_id = FieldDescriptor('publisher_id')
+    publisher_city = FieldDescriptor('publisher_city')
+    publisher_country = FieldDescriptor('publisher_country')
 
     @property
     def imprint_id(self):

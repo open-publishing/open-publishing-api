@@ -1,7 +1,6 @@
 """Module for handling authentification"""
 import requests
 
-
 class AuthException(Exception):
     """AuthException class."""
 
@@ -114,4 +113,4 @@ class AuthContext:
 
     def _auth_url(self):
         """Return API url."""
-        return 'https://{0}/auth/auth'.format(self.api_host)
+        return self.api_host + '/auth/auth'

@@ -9,6 +9,8 @@ class DatabaseObject(object):
     def __init__(self,
                  context,
                  object_id):
+        if not isinstance(object_id, int) and object_id is not None:
+            raise ValueError('object_id should be int or None, got: {}'.format(repr(object_id)))
         self._context = context
         self._object_id = object_id
         self._fields = {}

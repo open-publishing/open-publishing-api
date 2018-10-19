@@ -10,6 +10,7 @@ from open_publishing.bisac import BisacList
 from .thema import ThemaList
 from .subject import SubjectField
 from .series import SeriesList
+from .institution import InstitutionField
 
 class CatalogTypeBase(FieldGroup):
     _catalog_type = None
@@ -63,9 +64,13 @@ class Academic(CatalogTypeBase):
                                                        aspect='academic.*',
                                                        field_locator='academic.year_of_text')
 
+        self._fields['institution'] = InstitutionField(document=document)
+
+
     subject = FieldDescriptor('subject')
     category = FieldDescriptor('category')
     publication_year = FieldDescriptor('publication_year')
+    institution = FieldDescriptor('institution')
 
 class NonAcademic(CatalogTypeBase):
     _catalog_type = CatalogType.non_academic
