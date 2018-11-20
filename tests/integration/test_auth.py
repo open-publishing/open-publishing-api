@@ -14,7 +14,7 @@ class TestAuthentification(TestCase):
         super().__init__(*args, **kwargs)
         if 'NG_DEVNAME' not in os.environ:
             raise Exception("APIHOST not set in environment.")
-        self.api_host = 'api.{}.dev.openpublishing.com'.format(os.environ['NG_DEVNAME'])
+        self.api_host = 'https://api.{}.dev.openpublishing.com'.format(os.environ['NG_DEVNAME'])
 
     def setUp(self):
         pass
