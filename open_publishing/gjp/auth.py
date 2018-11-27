@@ -27,11 +27,11 @@ class AuthContext:
     def auth(self, **kwargs):
         """
         Authenticate with various options.
-              email, password, realm_id : authenticate as user
-              api_key                   : authenticate with api_key obtained in admin area
-              app_id, app_secret        : authenticate with app_secret as app. App secrets
-                                          are shared as docker secrets.
-              realm_id                  : authenticate as world.
+              email, password, realm_id           : authenticate as user
+              api_key                             : authenticate with api_key obtained in admin area
+              app_id or app_name, app_secret      : authenticate with app_secret as app. App secrets
+                                                    are shared as docker secrets.
+              realm_id                            : authenticate as world.
         """
         self.auth_token = None
         self.authenticated = False
@@ -40,8 +40,8 @@ class AuthContext:
             self._auth_user(email=kwargs['email'], password=kwargs['password'], realm_id=kwargs['realm_id'])
         elif 'api_key' in kwargs:
             self._auth_api_key(api_key=kwargs['api_key'])
-        elif 'app_id' in kwargs and 'app_secret' in kwargs:
-            self._auth_app(app_id=kwargs['app_id'], app_secret=kwargs['app_secret'])
+        elif ('app_id' in kwargs or 'app_name' in kwargs) and 'app_secret' in kwargs:
+            self._auth_app(app_secret=kwargs['app_secret'], app_id=kwargs.get('app_id', None), app_name=kwargs.get('app_name', None))
         elif 'realm_id' in kwargs:
             self._auth_world(realm_id=kwargs['realm_id'])
         else:
@@ -69,14 +69,22 @@ class AuthContext:
             timeout=5)
         self._evaluate_response(req)
 
-    def _auth_app(self, app_id, app_secret):
+    def _auth_app(self, app_secret, app_id=None, app_name=None):
         """Authenticate with user credentials."""
+        if app_id is not None and app_name is not None:
+            raise ValuerError('Only app_id or app_name should be set')
+        data = {
+            'type': 'app',
+            'app_secret': app_secret
+        }
+        if app_id is not None:
+            data['app_id'] = app_id
+        if app_name is not None:
+            data['app_name'] = app_name
+
         req = requests.post(
             self._auth_url(),
-            data={
-                'type': 'app',
-                'app_id': app_id,
-                'app_secret': app_secret},
+            data=data,
             timeout=5)
         self._evaluate_response(req)
 
