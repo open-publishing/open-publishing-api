@@ -111,10 +111,21 @@ class TestAuthentification(TestCase):
             self.assertEqual(ctx.me.app_name, None)
 
     @attr("simple")
-    def test_context_auth_app(self):
+    def test_context_auth_app_id(self):
         """Test authentification within context with app_id and app_secret."""
         with op.context(host=self.api_host) as ctx:
             ctx.auth(app_id=100, app_secret='app-secret-100')
+            self.assertEqual(ctx.me.user_name, None)
+            self.assertEqual(ctx.me.realm_id, None)
+            self.assertEqual(ctx.me.realm_name, None)
+            self.assertEqual(ctx.me.app_id, 100)
+            self.assertEqual(ctx.me.app_name, "Parkteam")
+
+    @attr("simple")
+    def test_context_auth_app_name(self):
+        """Test authentification within context with app_name and app_secret."""
+        with op.context(host=self.api_host) as ctx:
+            ctx.auth(app_name='parkteam', app_secret='app-secret-100')
             self.assertEqual(ctx.me.user_name, None)
             self.assertEqual(ctx.me.realm_id, None)
             self.assertEqual(ctx.me.realm_name, None)
