@@ -24,7 +24,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_world(self):
-        """Test authentification as user with correct credentials."""
+        """Test authentication as user with correct credentials."""
         auth_context = AuthContext(api_host=self.api_host)
         auth_context.auth(realm_id=1)
         self.assertTrue(auth_context.authenticated)
@@ -32,7 +32,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_user_correct(self):
-        """Test authentification as user with correct credentials."""
+        """Test authentication as user with correct credentials."""
         auth_context = AuthContext(api_host=self.api_host)
         auth_context.auth(email='jm@grin.com', password='123', realm_id=1)
         self.assertTrue(auth_context.authenticated)
@@ -40,7 +40,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_user_wrong(self):
-        """Test authentification as user with wrong credentials."""
+        """Test authentication as user with wrong credentials."""
         auth_context = AuthContext(api_host=self.api_host)
         with self.assertRaises(AuthFailedException):
             auth_context.auth(email='jm@grin.com', password='456', realm_id=1)
@@ -48,7 +48,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_api_key_correct(self):
-        """Test authentification with correct api_key."""
+        """Test authentication with correct api_key."""
         auth_context = AuthContext(api_host=self.api_host)
         auth_context.auth(api_key='1_1R_3')
         self.assertTrue(auth_context.authenticated)
@@ -56,7 +56,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_api_key_wrong(self):
-        """Test authentification with wrong api_key."""
+        """Test authentication with wrong api_key."""
         auth_context = AuthContext(api_host=self.api_host)
         with self.assertRaises(AuthFailedException):
             auth_context.auth(api_key='WRONG')
@@ -64,7 +64,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_app_secret_correct(self):
-        """Test authentification with correct app_secret."""
+        """Test authentication with correct app_secret."""
         auth_context = AuthContext(api_host=self.api_host)
         auth_context.auth(app_id=100, app_secret="app-secret-100")
         self.assertTrue(auth_context.authenticated)
@@ -72,7 +72,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_auth_app_secret_wrong(self):
-        """Test authentification with correct app_secret."""
+        """Test authentication with correct app_secret."""
         auth_context = AuthContext(api_host=self.api_host)
         with self.assertRaises(AuthFailedException):
             auth_context.auth(app_id=100, app_secret='app-secret-101')
@@ -80,7 +80,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_context_auth_traditional(self):
-        """Test authentification within context - the traditional way."""
+        """Test authentication within context - the traditional way."""
         with op.context(api_key='1_1R_3', host=self.api_host) as ctx:
             self.assertEqual(ctx.me.user_name, 'August Admin')
             self.assertEqual(ctx.me.realm_id, 1)
@@ -90,7 +90,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_context_auth_api_key(self):
-        """Test authentification within context with api-key."""
+        """Test authentication within context with api-key."""
         with op.context(host=self.api_host) as ctx:
             ctx.auth(api_key='1_1R_3')
             self.assertEqual(ctx.me.user_name, 'August Admin')
@@ -101,7 +101,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_context_auth_user_name_password(self):
-        """Test authentification within context with username/password."""
+        """Test authentication within context with username/password."""
         with op.context(host=self.api_host) as ctx:
             ctx.auth(email='admin@grin.com', password='123', realm_id=1)
             self.assertEqual(ctx.me.user_name, 'August Admin')
@@ -112,7 +112,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_context_auth_app_id(self):
-        """Test authentification within context with app_id and app_secret."""
+        """Test authentication within context with app_id and app_secret."""
         with op.context(host=self.api_host) as ctx:
             ctx.auth(app_id=100, app_secret='app-secret-100')
             self.assertEqual(ctx.me.user_name, None)
@@ -123,7 +123,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_context_auth_app_name(self):
-        """Test authentification within context with app_name and app_secret."""
+        """Test authentication within context with app_name and app_secret."""
         with op.context(host=self.api_host) as ctx:
             ctx.auth(app_name='parkteam', app_secret='app-secret-100')
             self.assertEqual(ctx.me.user_name, None)
@@ -134,7 +134,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_context_auth_world(self):
-        """Test authentification within context with app_id and app_secret."""
+        """Test authentication within context with app_id and app_secret."""
         with op.context(host=self.api_host) as ctx:
             ctx.auth(realm_id=1)
             self.assertEqual(ctx.me.user_name, None)
@@ -145,7 +145,7 @@ class TestAuthentification(TestCase):
 
     @attr("simple")
     def test_new_realm(self):
-        """Test authentification within context with a newly created realm."""
+        """Test authentication within context with a newly created realm."""
         new_realm = create_realm()
         self.assertEqual(type(new_realm['realm_id']), int)
         self.assertGreater(new_realm['realm_id'], 0)
