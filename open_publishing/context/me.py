@@ -1,7 +1,7 @@
 """
 Abstraction for the 'me' object.
 
-The 'me' object describe the current authentification state
+The 'me' object describe the current authentication state
 of an authenticated session.
 """
 

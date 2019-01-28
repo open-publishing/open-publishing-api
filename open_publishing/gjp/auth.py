@@ -1,4 +1,4 @@
-"""Module for handling authentification"""
+"""Module for handling authentication"""
 import requests
 
 class AuthException(Exception):
