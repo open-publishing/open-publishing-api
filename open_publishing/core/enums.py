@@ -786,6 +786,7 @@ ProfileShow = Enum(no = 'NO',
                    default = 'DEFAULT')
 
 AssetsCoverType = Enum(distribution = 'distribution',
+                       original = 'original',
                        big = 'big')
 
 AssetsModules = Enum(cover = 'cover',

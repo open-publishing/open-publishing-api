@@ -922,7 +922,8 @@ class GJP():
                      contract_type=None,
                      country_codes=None,
                      codelist_issue=None,
-                     subject_keyword_in_separate_tag=False):
+                     subject_keyword_in_separate_tag=False,
+                     sales_rights_country_codes=None):
         path = '/rpc/onix'
         params = {}
         headers = {
@@ -941,6 +942,8 @@ class GJP():
             params['codelist_issue'] = codelist_issue
         if subject_keyword_in_separate_tag:
             params['subject_keyword_in_separate_tag'] = 'yes'
+        if sales_rights_country_codes is not None:
+            params['sales_rights_country_codes'] = sales_rights_country_codes
         params['publication_status'] = status.identifier
 
         resources = []

@@ -27,6 +27,8 @@ from .distribution_availability import DistributionAvailabilityField
 from .distribution_channels import DistributionChannelsField
 from .search_tags import SearchTagsField
 from .admin_search_tags import AdminSearchTagsField
+from .external_shop.shoplink import ShopLink
+from .external_shop.external_id import ExternalID
 
 class Document(DatabaseObject):
     _object_class = "document"
@@ -362,6 +364,12 @@ class DistributionGroup(FieldGroup):
                                                                 average_rating,
                                                                 review_count,
                                                                 shop_review_url)
+
+    def set_shoplink(self, shop: str, ean: str, publication_type: str, shoplink: str) -> bool:
+        return ShopLink(self._document.context).set_shoplink(shop, ean, publication_type, shoplink)
+
+    def set_external_id(self, shop: str, ean: str, external_id: str) -> bool:
+        return ExternalID(self._document.context).set_external_id(shop, ean, external_id)
 
 
 class EditionGroup(FieldGroup):

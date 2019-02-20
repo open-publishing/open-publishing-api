@@ -18,33 +18,14 @@ class CatalogTypeBase(FieldGroup):
                  document):
         super(CatalogTypeBase, self).__init__(document)
         self._fields['series'] = SeriesList(document)
-        self._fields['deprecated_series'] = DeprecatedSeriesGroup(document)
         self._fields['thema'] = ThemaList(document=document)
 
     series = FieldDescriptor('series')
-    deprecated_series = FieldDescriptor('deprecated_series')
     thema = FieldDescriptor('thema')
 
     @property
     def catalog_type(self):
         return self._catalog_type
-
-class DeprecatedSeriesGroup(FieldGroup):
-    def __init__(self,
-                 document):
-        super(DeprecatedSeriesGroup, self).__init__(document)
-        self._fields['title'] = SimpleField(database_object=document,
-                                            aspect='extended_information.*',
-                                            dtype=str,
-                                            field_locator='extended_information.series_name')
-        self._fields['number'] = SimpleField(database_object=document,
-                                             aspect='extended_information.*',
-                                             dtype=str,
-                                             field_locator='extended_information.series_number')
-
-    title = FieldDescriptor('title')
-    number = FieldDescriptor('number')
-
 
 class Academic(CatalogTypeBase):
     _catalog_type = CatalogType.academic
