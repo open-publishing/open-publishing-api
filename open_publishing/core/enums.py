@@ -558,6 +558,7 @@ OnixStyle = Enum(amazon = 'amazon',
                  tigerbooks = 'tigerbooks',
                  mojoreads = 'mojoreads',
                  amzprint = 'amzprint',
+                 wlb = 'wlb',
                  default = 'default')
 
 OnixType = Enum(short = 'short',
