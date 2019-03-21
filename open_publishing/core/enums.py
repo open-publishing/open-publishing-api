@@ -428,14 +428,8 @@ EBookFileType = Enum(pdf = 'pdf',
                      mobi = 'mobi',
                      ibooks = 'ibooks')
 
-AudioBookFileType = Enum(audiobook = 'audiobook')
-SoftwareFileType = Enum(software = 'software')
-
 PreviewFileType = Enum(pdf= 'pdf',
                     html = 'html')
-
-ContentType = Enum(final = 'final',
-                   production = 'production')
 
 IsbnType = Enum(book = 'book',
                 epub = 'ebook::epub',

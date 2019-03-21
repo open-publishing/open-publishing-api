@@ -36,7 +36,6 @@ from .core.enums import Currency as currency
 
 from .core.enums import EBookFileType as _ebook_filetype
 from .core.enums import PreviewFileType as _preview_filetype
-from .core.enums import ContentType as _content_type
 from .core.enums import FileType as _filetype
 
 from .core.enums import EventTarget as _event_target
@@ -101,7 +100,6 @@ class isbn(object):
 class files(object):
     ebook_filetype = _ebook_filetype
     preview_filetype = _preview_filetype
-    content_type = _content_type
     filetype = _filetype
 
 class assets(object):
