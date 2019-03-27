@@ -10,11 +10,13 @@ class Campaign(object):
     def __init__(self,
                  price,
                  from_date,
-                 to_date):
+                 to_date,
+                 description):
         self._status = ValueStatus.soft
         self._price = _convert_to_price(price)
         self._from_date = _convert_to_date(from_date)
         self._to_date = _convert_to_date(to_date)
+        self._description = description if description else None
 
     @property
     def status(self):
@@ -47,6 +49,14 @@ class Campaign(object):
         self._to_date = _convert_to_date(value)
         self._status = ValueStatus.hard
 
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value if value else None
+        self._status = ValueStatus.hard
 
     @classmethod
     def from_gjp(cls, gjp):
@@ -55,15 +65,18 @@ class Campaign(object):
         # to_date = datetime.strptime(gjp['to_date'], '%Y-%m-%d').date()
         from_date = datetime(*[int(i) for i in gjp['from_date'].split('-')]).date()
         to_date = datetime(*[int(i) for i in gjp['to_date'].split('-')]).date()
+        description = gjp['description']
 
         return cls(price,
                    from_date,
-                   to_date)
+                   to_date,
+                   description)
 
     def to_gjp(self):
         return {'price' : self._price.to_gjp(),
                 'from_date' : self._from_date.strftime("%Y-%m-%d"),
-                'to_date' : self._to_date.strftime("%Y-%m-%d")}
+                'to_date' : self._to_date.strftime("%Y-%m-%d"),
+                'description' : self._description if self._description else ""}
                 
     
 
@@ -113,10 +126,12 @@ class CampaignList(object):
     def add(self,
             price,
             from_date,
-            to_date):
+            to_date,
+            description=None):
         new_camp = Campaign(price,
                             from_date,
-                            to_date)
+                            to_date,
+                            description)
         
         if new_camp.from_date > new_camp.to_date:
             raise ValueError("from_date should be less than to_date")
