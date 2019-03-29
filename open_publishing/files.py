@@ -93,7 +93,7 @@ class AudiobookFiles(FilesBase):
 
     def upload_content(self,
                        file_name):
-        super(SoftwareFiles, self)._upload(file_name, FileType.audiobook)
+        super(AudiobookFiles, self)._upload(file_name, FileType.audiobook)
 
     def upload_cover(self,
                      file_name):
