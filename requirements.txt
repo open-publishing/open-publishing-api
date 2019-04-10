@@ -1,2 +1,2 @@
-PyYAML
-jsonschema
+requests==2.21.0
+jsonschema==3.0.1
