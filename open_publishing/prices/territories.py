@@ -119,7 +119,6 @@ class TerritoryList(SequenceField):
         all_ter = set({})
         for item in self:
             all_ter = all_ter | item.territory_codes
-        all_ter = all_ter ^ {'WORLD'}
         
         if all_ter & territory_codes:
             raise ValueError('Overlapping territory codes {0}'.format(all_ter & territory_codes))
