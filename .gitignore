@@ -9,3 +9,5 @@ man
 share
 pip-selfcheck.json
 results.xml
+venv
+.venv
