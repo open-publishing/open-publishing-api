@@ -24,7 +24,8 @@ pypi:
 	# @python3 setup.py sdist upload -r pypi
 	@rm -f dist/*
 	@python setup.py sdist
-	@twine upload dist/*
+	#@twine upload dist/*
+	twine upload --repository-url https://pypi.openpublishing.com dist/*
 
 pylint:
 	@pylint -j 8 --rcfile=.pylintrc open_publishing2 test/*.py *.py examples/*.py
