@@ -62,7 +62,9 @@ from .core.enums import ShippingType as _shipping_type
 from .core.enums import ShippingStatus as _shipping_status
 from .core.enums import ShippingLevel as _shipping_level
 
-from .core.enums import ProcessingType as processing
+from .core.enums import MediaFileTypeCode as _mediafile_type_code
+from .core.enums import MediaFileFormatCode as _mediafile_format_code
+from .core.enums import MediaFileLinkTypeCode as _mediafile_link_type_code
 
 from .assets import AssetNotReady, AssetExpired, AssetNotFound
 from .gjp import ObjectNotFound, TemporaryNotAvailable, AssetCreationError
@@ -163,3 +165,8 @@ def context(api_key=None,
 
 class profile(object):
     show = _profile_show
+
+class mediafile:
+    type_code = _mediafile_type_code
+    format_code = _mediafile_format_code
+    link_type_code = _mediafile_link_type_code
