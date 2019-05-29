@@ -1,5 +1,6 @@
 """Module for a list of MediaFileLink objects."""
 from open_publishing.core import DatabaseObjectsList
+from open_publishing.core.enums import MediaFileTypeCode, PublicationType
 
 from .mediafile_link import MediaFileLink
 
@@ -20,6 +21,10 @@ class MediafileLinkList(DatabaseObjectsList):
             url,
             type_code,
             publication_type):
+        if type_code not in MediaFileTypeCode:
+            raise TypeError('type_code should be one of op.mediafile.type_code.*')
+        if publication_type not in PublicationType:
+            raise TypeError('type_code should be one of op.publication.*')
         res = self._database_object._context.gjp.create(MediaFileLink._object_class,
                                                         media_file_link=url,
                                                         media_file_type_code=type_code.identifier,
