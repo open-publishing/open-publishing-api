@@ -604,7 +604,7 @@ ProvisionChannelType = Enum(book_and_ebook = '',
 
 
 ProvisionChannelBase = Enum(net_price = 'NET_PRICE',
-                            groos_price = 'GROSS_PRICE',
+                            gross_price = 'GROSS_PRICE',
                             net_margin = 'NET_MARGIN',
                             gross_margin = 'GROSS_MARGIN')
 
