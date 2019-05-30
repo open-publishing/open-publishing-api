@@ -66,6 +66,8 @@ from .core.enums import MediaFileTypeCode as _mediafile_type_code
 from .core.enums import MediaFileFormatCode as _mediafile_format_code
 from .core.enums import MediaFileLinkTypeCode as _mediafile_link_type_code
 
+from .core.enums import ProcessingType as processing
+
 from .assets import AssetNotReady, AssetExpired, AssetNotFound
 from .gjp import ObjectNotFound, TemporaryNotAvailable, AssetCreationError
 
