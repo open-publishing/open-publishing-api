@@ -3,7 +3,7 @@
 from open_publishing.core import SimpleField
 from open_publishing.core import FieldDescriptor
 from open_publishing.core import DatabaseObject
-from open_publishing.core.enums import MediaFileTypeCode, MediaFileFormatCode, MediaFileLinkTypeCode
+from open_publishing.core.enums import MediaFileTypeCode, MediaFileFormatCode, MediaFileLinkTypeCode, PublicationType
 
 class MediaFileLink(DatabaseObject):
     """Class for GJP abstraction of media file links."""
@@ -45,7 +45,7 @@ class MediaFileLink(DatabaseObject):
             database_object=self,
             aspect='*',
             field_locator='publication_type',
-            dtype=str)
+            dtype=PublicationType)
 
     url = FieldDescriptor('url')
     type_code = FieldDescriptor('type_code')
