@@ -955,7 +955,7 @@ class GJP():
             if product.availability is not None:
                 resource['availability'] = product.availability
             if product.discount is not None:
-                resource['discount_code'] = {'name': product.discount[0], 'code': product.discount[1]}
+                resource['discount_code'] = {'type_name': product.discount[0], 'code': product.discount[1]}
             resources.append(resource)
 
         data = {'resources': resources}
