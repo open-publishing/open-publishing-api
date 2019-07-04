@@ -8,18 +8,18 @@ class AudienceGroup(FieldGroup):
                  document):
         super(AudienceGroup, self).__init__(document)
         self._fields['description'] = SimpleField(database_object=document,
-                                                  aspect='audience.*',
+                                                  aspect='audience',
                                                   field_locator='audience.description',
                                                   dtype=str,
                                                   nullable=True)
 
         self._fields['audience_code'] = SimpleField(database_object=document,
-                                                    aspect='audience.*',
+                                                    aspect='audience',
                                                     field_locator='audience.audience_code',
                                                     dtype=str)
 
         self._fields['onix_adult_audience_rating'] = SimpleField(database_object=document,
-                                                    aspect='audience.*',
+                                                    aspect='audience',
                                                     field_locator='audience.onix_adult_audience_rating',
                                                     dtype=str)
         
@@ -38,14 +38,14 @@ class AgeRangeGroup(FieldGroup):
                  document):
         super(AgeRangeGroup, self).__init__(document)
         self._fields['since'] = SimpleField(database_object=document,
-                                            aspect='audience.*',
+                                            aspect='audience',
                                             field_locator='audience.age_range_from',
                                             dtype=int,
                                             kind=FieldKind.readonly,
                                             nullable=True)
 
         self._fields['till'] = SimpleField(database_object=document,
-                                           aspect='audience.*',
+                                           aspect='audience',
                                            field_locator='audience.age_range_to',
                                            dtype=int,
                                            kind=FieldKind.readonly,
