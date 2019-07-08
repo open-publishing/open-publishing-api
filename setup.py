@@ -3,8 +3,9 @@
 from setuptools import setup, find_packages
 
 REQUIRES = [
+    'jsonschema',
     'PyYAML',
-    'jsonschema'
+    'requests'
 ]
 
 VERSION = '0.0.19'
