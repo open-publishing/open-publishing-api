@@ -572,18 +572,6 @@ OnixStatus = Enum(current = 'current',
                   blocked = 'blocked')
 
 
-AdultFlag = Enum(unrated = 'UNRATED',
-                 any_adult_audience = 'ANY_ADULT_AUDIENCE',
-                 content_warning = 'CONTENT_WARNING',
-                 content_warning_sex = 'CONTENT_WARNING_SEX',
-                 content_warning_violence = 'CONTENT_WARNING_VIOLENCE',
-                 content_warning_drug_taking = 'CONTENT_WARNING_DRUG_TAKING',
-                 content_warning_language = 'CONTENT_WARNING_LANGUAGE',
-                 content_warning_intolerance = 'CONTENT_WARNING_INTOLERANCE')
-
-ChildrenFlag = Enum(unrated = 'UNRATED',
-                    children_juvenile = 'CHILDREN_JUVENILE')
-
 ProvisionRuleAlgorithm = Enum(percentage = 'PERCENTAGE',
                               fixed = 'FIXED',
                               progression = 'PROGRESSION',

@@ -22,8 +22,6 @@ from .core.enums import OnixType as _onixtype
 from .core.enums import OnixStatus as _onixstatus
 from .context.onix import OnixProduct as _onixproduct
 
-from .core.enums import AdultFlag as adult_flag
-from .core.enums import ChildrenFlag as children_flag
 from .core.enums import AcademicCategory as academic_category
 
 from .core.enums import Language as language
