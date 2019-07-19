@@ -6,7 +6,8 @@ class OnixProduct(object):
     def __init__(self,
                  document_id,
                  publication_type,
-                 availability):
+                 availability,
+                 discount=None):
         self._document_id = document_id
 
         if publication_type not in PublicationType:
@@ -15,6 +16,11 @@ class OnixProduct(object):
             self._publication_type = publication_type
 
         self._availability = availability
+
+        if discount is not None and not isinstance(discount, tuple) and len(discount) != 2:
+            raise ValueError('discount should be None or tuple (name, code)')
+        else:
+            self._discount = discount
 
     @property
     def document_id(self):
@@ -27,6 +33,10 @@ class OnixProduct(object):
     @property
     def availability(self):
         return self._availability
+
+    @property
+    def discount(self):
+        return self._discount
     
 class Onix(object):
     def __init__(self,
