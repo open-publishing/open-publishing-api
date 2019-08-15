@@ -786,6 +786,7 @@ AssetsModules = Enum(cover = 'cover',
                      software = 'software',
                      pdf = 'pdf',
                      pod = 'pod',
+                     pod_cover = 'pod_cover',
                      extract = 'extract')
 
 BookBinding = Enum(auto = 'AUTO',
