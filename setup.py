@@ -8,7 +8,7 @@ REQUIRES = [
     'requests'
 ]
 
-VERSION = '0.0.19'
+VERSION = '0.0.20'
 
 setup(
     name='open_publishing',
