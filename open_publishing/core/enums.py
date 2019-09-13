@@ -785,7 +785,8 @@ AssetsModules = Enum(cover = 'cover',
                      audiobook = 'audiobook',
                      software = 'software',
                      pdf = 'pdf',
-                     pod = 'pod',
+                     pod = 'pod',  # Deprecated
+                     pod_bookblock = 'pod_bookblock',
                      pod_cover = 'pod_cover',
                      extract = 'extract')
 
