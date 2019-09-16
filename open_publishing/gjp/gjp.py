@@ -1051,11 +1051,14 @@ class GJP():
             'method': 'download',
             'file_id': file_id,
         }
+        headers = {
+            'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token
+            }
 
         response = self._session.get(self._ctx.host + path,
                                      params=params,
+                                     headers=headers,
                                      **self._ctx.requests_kwargs)
-
         self._check_status_code(response)
         if response.headers['content-type'].find('text/json') != -1:
             response_json = self._check_response(response)
