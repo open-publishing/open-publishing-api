@@ -26,7 +26,7 @@ from .archive import ArchiveField
 from .distribution_availability import DistributionAvailabilityField
 from .distribution_channels import DistributionChannelsField
 from .search_tags import SearchTagsField
-from .admin_search_tags import AdminSearchTagsField
+from .labels import LabelsField
 from .external_shop.shoplink import ShopLink
 from .external_shop.external_id import ExternalID
 
@@ -125,7 +125,7 @@ class Document(DatabaseObject):
         self._fields["preview"] = PreviewGroup(document=self)
         self._fields["licenses"] = LicensesGroup(document=self)
         self._fields["tags"] = SearchTagsField(document=self)
-        self._fields["admin_tags"] = AdminSearchTagsField(document=self)
+        self._fields["admin_tags"] = LabelsField(document=self)
         self._fields["assets"] = AssetsGroup(self)
         self._fields["processing"] = ProcessingGroup(self)
         self._fields["onix"] = DocumentOnix(self)
