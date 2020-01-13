@@ -39,18 +39,12 @@ class Academic(CatalogTypeBase):
                                                field_locator='academic.category_id',
                                                nullable=True,
                                                serialized_null=0)
-        self._fields['publication_year'] = SimpleField(database_object=document,
-                                                       dtype=str,
-                                                       nullable=True,
-                                                       aspect='academic.*',
-                                                       field_locator='academic.year_of_text')
 
         self._fields['institution'] = InstitutionField(document=document)
 
 
     subject = FieldDescriptor('subject')
     category = FieldDescriptor('category')
-    publication_year = FieldDescriptor('publication_year')
     institution = FieldDescriptor('institution')
 
 class NonAcademic(CatalogTypeBase):
@@ -58,12 +52,6 @@ class NonAcademic(CatalogTypeBase):
     def __init__(self,
                  document = None):
         super(NonAcademic, self).__init__(document)
-        self._fields['publication_year'] = NullableIntField(database_object=document,
-                                                            aspect='non_academic.*',
-                                                            field_locator='non_academic.publication_year')
-        self._fields['copyright_year'] = NullableIntField(database_object=document,
-                                                          aspect='non_academic.*',
-                                                          field_locator='non_academic.copyright_year')
 
         self._fields['vlb_category'] = ExtendableEnumField(database_object=document,
                                                            aspect='non_academic.*',
@@ -74,8 +62,6 @@ class NonAcademic(CatalogTypeBase):
         self._fields['genres'] = GenresList(document)
         self._fields['bisac'] = BisacList(document=document)
 
-    publication_year = FieldDescriptor('publication_year')
-    copyright_year = FieldDescriptor('copyright_year')
     vlb_category = FieldDescriptor('vlb_category')
     bisac = FieldDescriptor('bisac')
     genres = FieldDescriptor('genres')
