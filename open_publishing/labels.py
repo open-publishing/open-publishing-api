@@ -1,11 +1,11 @@
 from open_publishing.core.enums import ValueStatus
 from open_publishing.core import Field
 
-class AdminSearchTagsField(Field):
+class LabelsField(Field):
     def __init__(self,
                  document):
-        super(AdminSearchTagsField, self).__init__(database_object=document,
-                                                   aspect='admin_search_tags')
+        super(LabelsField, self).__init__(database_object=document,
+                                                   aspect='labels')
         self._value = None
     
     @property
@@ -24,18 +24,18 @@ class AdminSearchTagsField(Field):
             self._value = value
             self._status = ValueStatus.hard
         else :
-            raise TypeError('Expected set of adminSearchTags, got {0}'.format(type(value)))
+            raise TypeError('Expected set of Labels, got {0}'.format(type(value)))
 
     def update(self,
                gjp):
         if self._status is not ValueStatus.hard:
             master_obj = self._master_object(gjp)
-            if 'admin_search_tags' in master_obj:
-                self._value = set(master_obj['admin_search_tags'])
+            if 'labels' in master_obj:
+                self._value = set(master_obj['labels'])
                 self._status = ValueStatus.soft
             
     def gjp(self,
             gjp):
         if self._status is ValueStatus.hard:
-            gjp['admin_search_tags'] = list(self._value)
+            gjp['labels'] = list(self._value)
 
