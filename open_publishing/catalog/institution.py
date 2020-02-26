@@ -1,8 +1,9 @@
-from open_publishing.core import SimpleField
-from open_publishing.core import FieldDescriptor
 from open_publishing.core import DatabaseObject
+from open_publishing.core import FieldDescriptor
+from open_publishing.core import SimpleField
 from open_publishing.core.enums import Country, FieldKind
 from open_publishing.extendable_enum_field import ExtendableEnumField
+
 
 class Institution(DatabaseObject):
     _object_class = 'institution'
@@ -54,11 +55,10 @@ class InstitutionField(SimpleField):
 
     def _parse_value(self,
                      value):
-        if value:
+        if isinstance(value, (str, bytes)):
             return Institution(self.database_object.context,
                                institution_id=Institution.id_from_guid(value))
-        else:
-            return None
+        return None
 
     def _value_validation(self,
                           value):

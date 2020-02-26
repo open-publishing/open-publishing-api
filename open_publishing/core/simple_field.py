@@ -102,7 +102,7 @@ class SimpleField(Field):
             return self._dtype.from_id(value)
         elif self._dtype is set:
             return set(value)
-        else :
+        else:
             raise RuntimeError("Unable to set from json, field locator '{0}'".format(self._field_locator))
         
     def _value_validation(self,

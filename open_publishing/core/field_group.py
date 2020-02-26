@@ -1,5 +1,3 @@
-import traceback
-
 from .enums import ValueStatus, FieldKind
 from .field import Field
 from .field_descriptor import FieldDescriptor
@@ -37,8 +35,7 @@ class FieldGroup(Field):
             try:
                 field.update(gjp)
             except Exception as e:
-                raise RuntimeError("Update failed for field: '{0}'\n{1}".format(name,
-                                                                                ''.join(traceback.format_exception_only(type(e), e))))
+                raise RuntimeError("Update failed for field: '{0}'".format(name)) from e
 
     def gjp(self,
             gjp):
