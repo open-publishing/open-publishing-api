@@ -1,6 +1,7 @@
 """Module for setting up open publishing library python object."""
 
 from setuptools import setup, find_packages
+import os
 
 REQUIRES = [
     'jsonschema',
@@ -8,7 +9,7 @@ REQUIRES = [
     'requests'
 ]
 
-VERSION = '0.0.22'
+VERSION = os.getenv("RELEASE_VERSION", "0.0.1")
 
 setup(
     name='open_publishing',
