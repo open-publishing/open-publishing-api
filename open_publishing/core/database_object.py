@@ -1,7 +1,7 @@
 import re
-import traceback
 
 import open_publishing.gjp
+
 
 class DatabaseObject(object):
     _object_class = None
@@ -77,10 +77,8 @@ class DatabaseObject(object):
             try:
                 field.update(gjp)
             except Exception as e:
-                raise RuntimeError("Update failed for field: '{0}'\n{1}".format(name,
-                                                                                ''.join(traceback.format_exception_only(type(e), e))))
-        
-    
+                raise RuntimeError("Update failed for field: '{0}'".format(name)) from e
+
     def _fetch(self,
                aspect):
         if self._object_id is not None:

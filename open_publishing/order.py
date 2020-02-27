@@ -253,9 +253,7 @@ class AddressGroup(FieldGroup):
                 try:
                     field.update(gjp)
                 except Exception as e:
-                    raise RuntimeError("Update failed for field: '{0}'\n{1}"
-                                       .format(name,
-                                               ''.join(traceback.format_exception_only(type(e), e))))
+                    raise RuntimeError("Update failed for field: '{0}'".format(name)) from e
 
     def __str__(self):
         return '{firstname} {lastname}; {street}; {line2}; {line3}; {city} {state} {zip}; {country}'.format(
@@ -532,10 +530,8 @@ class PersonGroup(FieldGroup):
                 try:
                     field.update(gjp)
                 except Exception as e:
-                    raise RuntimeError("Update failed for field: '{0}'\n{1}"
-                                       .format(name,
-                                               ''.join(traceback.format_exception_only(type(e), e))))
-        
+                    raise RuntimeError("Update failed for field: '{0}'".format(name)) from e
+
 
 def Person(id = None,
            first_name = None,
