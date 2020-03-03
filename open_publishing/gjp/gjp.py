@@ -59,9 +59,13 @@ class GJP():
             'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token
             }
 
+        params = {
+            'trigger_events': 'yes' if self._ctx.trigger_events else 'no'
+        }
         response = self._session.put(self._ctx.host + path,
                                      data=json.dumps(data),
                                      headers=headers,
+                                     params=params,
                                      **self._ctx.requests_kwargs)
         self._check_response(response, self._validate_json)
 
@@ -79,9 +83,13 @@ class GJP():
             'Accept': 'text/plain',
             'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
+        params = {
+            'trigger_events': 'yes' if self._ctx.trigger_events else 'no'
+        }
         response = self._session.put(self._ctx.host + path,
                                      data=json.dumps(data),
                                      headers=headers,
+                                     params=params,
                                      **self._ctx.requests_kwargs)
         self._check_response(response, self._validate_json)
 
@@ -129,8 +137,12 @@ class GJP():
         headers = {
             'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
+        params = {
+            'trigger_events': 'yes' if self._ctx.trigger_events else 'no'
+        }
         response = self._session.delete(self._ctx.host + path,
                                         headers=headers,
+                                        params=params,
                                         **self._ctx.requests_kwargs)
         self._check_response(response, self._validate_json)
 
@@ -146,9 +158,13 @@ class GJP():
             'Accept': 'text/plain',
             'Authorization': 'Bearer ' + self._ctx.auth_context.auth_token,
             }
+        params = {
+            'trigger_events': 'yes' if self._ctx.trigger_events else 'no'
+        }
         response = self._session.post(self._ctx.host + '/resource/v2',
                                       data=json.dumps(data),
                                       headers=headers,
+                                      params=params,
                                       **self._ctx.requests_kwargs)
         gjp = self._check_response(response, self._validate_json)
         guid = gjp['RESULTS'][0]

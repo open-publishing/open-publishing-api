@@ -26,6 +26,7 @@ class Context():
                  api_key,
                  log,
                  validate_json,
+                 trigger_events,
                  requests_kwargs):
         """Initialize Context object."""
         self._host = host
@@ -39,6 +40,7 @@ class Context():
         else:
             self._log = logging.getLogger('open_publishing')
 
+        self._trigger_events = trigger_events
         self._requests_kwargs = requests_kwargs if requests_kwargs else {}
         self._gjp = GJP(self, validate_json)
         self._documents = Documents(self)
@@ -77,6 +79,10 @@ class Context():
     def log(self):
         """Return log object."""
         return self._log
+
+    @property
+    def trigger_events(self):
+        return self._trigger_events
 
     @property
     def requests_kwargs(self):
