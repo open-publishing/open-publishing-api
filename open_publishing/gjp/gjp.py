@@ -940,7 +940,8 @@ class GJP():
                      codelist_issue=None,
                      subject_keyword_in_separate_tag=False,
                      sales_rights_country_codes=None,
-                     namespace_declaration=None):
+                     namespace_declaration=None,
+                     xsi_namespace=None):
         path = '/rpc/onix'
         params = {}
         headers = {
@@ -963,6 +964,8 @@ class GJP():
             params['sales_rights_country_codes'] = sales_rights_country_codes
         if namespace_declaration is not None:
             params['namespace_declaration'] = namespace_declaration
+        if xsi_namespace is not None:
+            params['xsi_namespace'] = xsi_namespace
         params['publication_status'] = status.identifier
 
         resources = []
