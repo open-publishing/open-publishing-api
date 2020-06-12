@@ -56,7 +56,9 @@ class Onix(object):
                  country_codes=None,
                  codelist_issue=None,
                  subject_keyword_in_separate_tag=False,
-                 sales_rights_country_codes=None):
+                 sales_rights_country_codes=None,
+                 namespace_declaration=None,
+                 xsi_namespace=None):
         if onix_style not in OnixStyle:
             raise ValueError('expected one of op.onix.style, got: {0}'.format(onix_style))
         if (onix_type is not None) and (onix_type not in OnixType):
@@ -81,7 +83,9 @@ class Onix(object):
                                                     country_codes=country_codes,
                                                     codelist_issue=codelist_issue,
                                                     subject_keyword_in_separate_tag=subject_keyword_in_separate_tag,
-                                                    sales_rights_country_codes=sales_rights_country_codes)
+                                                    sales_rights_country_codes=sales_rights_country_codes,
+                                                    namespace_declaration=namespace_declaration,
+                                                    xsi_namespace=xsi_namespace)
         return Content(data, headers)
         
     def save(self,

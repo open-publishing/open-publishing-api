@@ -138,7 +138,8 @@ def context(api_key=None,
             verify=None,
             cert=None,
             log=None,
-            validate_json = False):
+            validate_json = False,
+            trigger_events = True):
     """Generate Context object."""
     requests_kwargs = {}
     if auth is not None:
@@ -161,6 +162,7 @@ def context(api_key=None,
                     api_key=api_key,
                     log=log,
                     validate_json=validate_json,
+                    trigger_events=trigger_events,
                     requests_kwargs=requests_kwargs)
 
 class profile(object):
