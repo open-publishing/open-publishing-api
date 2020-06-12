@@ -72,17 +72,16 @@ class Document(DatabaseObject):
                                                       field_locator="internal.self_publishing",
                                                       dtype=bool)
 
-        self._fields['language'] = ExtendableEnumField(database_object=self,
-                                                       aspect=":basic",
-                                                       field_locator="language_id",
-                                                       dtype=Language,
-                                                       nullable=True)
+        self._fields["language"] = SimpleField(database_object=self,
+                                            aspect="language",
+                                            field_locator="language",
+                                            dtype=str,
+                                            nullable=True)
 
         self._fields["drm"] = SimpleField(database_object=self,
                                           aspect="internal.*",
                                           field_locator="internal.drm",
                                           dtype=DRM)
-        
 
         self._fields["urls"] = URLsGroup(document=self)
 
