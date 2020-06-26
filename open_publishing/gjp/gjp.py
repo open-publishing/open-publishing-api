@@ -1163,6 +1163,7 @@ class GJP():
                                      headers=headers,
                                      **self._ctx.requests_kwargs)
         reference = self._check_response(response)['result']['record_reference']
+        # use ean as default record reference
         return reference if reference else ean
 
     def _raise(self, error):
