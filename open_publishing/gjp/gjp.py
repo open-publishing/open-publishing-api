@@ -1162,7 +1162,8 @@ class GJP():
                                      params=params,
                                      headers=headers,
                                      **self._ctx.requests_kwargs)
-        return self._check_response(response)['result']['record_reference']
+        reference = self._check_response(response)['result']['record_reference']
+        return reference if reference else ean
 
     def _raise(self, error):
         def find_parameter(name):
