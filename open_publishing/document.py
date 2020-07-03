@@ -590,6 +590,12 @@ class BookGroup(FieldGroup):
                                                     dtype=int,
                                                     nullable=True)
         
+        self._fields["colored_pages"] = SimpleField(database_object=document,
+                                            aspect="book.*",
+                                            field_locator="book.colored_pages",
+                                            dtype=str,
+                                            nullable=True)
+        
 
     height = FieldDescriptor('height')
     width = FieldDescriptor('width')
@@ -598,6 +604,7 @@ class BookGroup(FieldGroup):
     weight = FieldDescriptor('weight')
     weight_technical = FieldDescriptor('weight_technical')
     weight_custom = FieldDescriptor('weight_custom')
+    colored_pages = FieldDescriptor('colored_pages')
 
 class URLsGroup(FieldGroup):
     def __init__(self,
