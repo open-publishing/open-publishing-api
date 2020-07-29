@@ -72,6 +72,11 @@ class Document(DatabaseObject):
                                                       field_locator="internal.self_publishing",
                                                       dtype=bool)
 
+        self._fields["internal_note"] = SimpleField(database_object=self,
+                                            aspect="internal.*",
+                                            field_locator="internal.note",
+                                            dtype=str)
+
         self._fields["language"] = SimpleField(database_object=self,
                                             aspect="language",
                                             field_locator="language",
@@ -175,6 +180,7 @@ class Document(DatabaseObject):
     onix = FieldDescriptor("onix")
     audio = FieldDescriptor("audio")
     page_count = FieldDescriptor("page_count")
+    internal_note = FieldDescriptor("internal_note")
 
 
     @property
