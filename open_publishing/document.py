@@ -77,6 +77,11 @@ class Document(DatabaseObject):
                                             field_locator="internal.note",
                                             dtype=str)
 
+        self._fields["insert_bastard_title"] = SimpleField(database_object=self,
+                                            aspect="document_print_configuration.insert_bastard_title",
+                                            field_locator="document_print_configuration.insert_bastard_title",
+                                            dtype=bool)
+
         self._fields["language"] = SimpleField(database_object=self,
                                             aspect="language",
                                             field_locator="language",
@@ -181,6 +186,7 @@ class Document(DatabaseObject):
     audio = FieldDescriptor("audio")
     page_count = FieldDescriptor("page_count")
     internal_note = FieldDescriptor("internal_note")
+    insert_bastard_title = FieldDescriptor("insert_bastard_title")
 
 
     @property
