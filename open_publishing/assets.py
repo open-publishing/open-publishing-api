@@ -6,6 +6,7 @@ from .core import SequenceItem, SequenceField
 from .core import FieldDescriptor
 
 from .gjp.stubbornness import RetryNotPossible
+from .gjp import ObjectNotFound
 from .content import Content
 
 class AssetNotReady(Exception):
@@ -30,7 +31,12 @@ class AssetLink(object):
         return self._file_id
 
     def download(self):
-        status, data, headers = self._ctx.gjp.request_file(self._file_id)
+        try:
+            status, data, headers = self._ctx.gjp.request_file(self._file_id)
+        except ObjectNotFound as e:
+            # In cases where we follow an redirect and a status 404 is thrown on remote server
+            # we should wrap ObjectNotFound exception by AssetNotFound
+            raise AssetNotFound('Status: notfound') from e
         if status == 'ready':
             return Content(data, headers)
         elif status in ['new', 'inprogress']:
