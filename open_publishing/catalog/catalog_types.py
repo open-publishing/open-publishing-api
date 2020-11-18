@@ -35,7 +35,7 @@ class Academic(CatalogTypeBase):
         self._fields['subject'] = SubjectField(document=document)
         self._fields['category'] = SimpleField(database_object=document,
                                                aspect='academic.*',
-                                               dtype=AcademicCategory,
+                                               dtype=int,
                                                field_locator='academic.category_id',
                                                nullable=True,
                                                serialized_null=0)
