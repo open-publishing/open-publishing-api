@@ -82,6 +82,11 @@ class Document(DatabaseObject):
                                             field_locator="document_print_configuration.insert_bastard_title",
                                             dtype=bool)
 
+        self._fields["bastardtitle_additional_legal_information"] = SimpleField(database_object=self,
+                                            aspect="document_print_configuration.bastardtitle_additional_legal_information",
+                                            field_locator="document_print_configuration.bastardtitle_additional_legal_information",
+                                            dtype=str)
+
         self._fields["language"] = SimpleField(database_object=self,
                                             aspect="language",
                                             field_locator="language",
@@ -187,6 +192,7 @@ class Document(DatabaseObject):
     page_count = FieldDescriptor("page_count")
     internal_note = FieldDescriptor("internal_note")
     insert_bastard_title = FieldDescriptor("insert_bastard_title")
+    bastardtitle_additional_legal_information = FieldDescriptor("bastardtitle_additional_legal_information")
 
 
     @property
