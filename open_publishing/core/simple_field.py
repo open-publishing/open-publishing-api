@@ -102,6 +102,8 @@ class SimpleField(Field):
             return self._dtype.from_id(value)
         elif self._dtype is set:
             return set(value)
+        elif self._dtype is dict:
+            return dict(value)
         else:
             raise RuntimeError("Unable to set from json, field locator '{0}'".format(self._field_locator))
         

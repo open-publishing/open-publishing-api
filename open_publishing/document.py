@@ -145,6 +145,7 @@ class Document(DatabaseObject):
         self._fields["onix"] = DocumentOnix(self)
         self._fields["audio"] = AudioGroup(document=self)
         self._fields["page_count"] = PageCountGroup(document=self)
+        self._fields["products"] = SimpleField(database_object=self, aspect="products.*", field_locator="products", dtype=dict)
 
         self._files = Files(self)
         self._events = ObjectEvents(self)
@@ -193,6 +194,7 @@ class Document(DatabaseObject):
     internal_note = FieldDescriptor("internal_note")
     insert_bastard_title = FieldDescriptor("insert_bastard_title")
     bastardtitle_additional_legal_information = FieldDescriptor("bastardtitle_additional_legal_information")
+    products = FieldDescriptor("products")
 
 
     @property
