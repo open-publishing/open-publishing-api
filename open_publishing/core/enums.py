@@ -510,6 +510,7 @@ UserStatus = Enum(active = 'ACTIVE',
 
 Gender = Enum(male = 'M',
               female = 'F',
+              diverse = 'D',
               unknown = 'NULL')
 
 Subscription = Enum(author = 'author',
