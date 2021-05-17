@@ -17,6 +17,9 @@ class EnumValue(object):
 
 
 class Enum(object):
+    class NotSet:
+        pass
+
     def __init__(self, **kwargs):
         self._values = []
         for key, value in list(kwargs.items()):
@@ -26,17 +29,18 @@ class Enum(object):
 
     def find(self,
              identifier):
-        for  value in self._values:
+        for value in self._values:
             if identifier == value.identifier:
                 return value
-        return None
+        return Enum.NotSet()
 
     def from_id(self,
                 identifier):
-        if self.find(identifier) is None:
+        found = self.find(identifier)
+        if isinstance(found, Enum.NotSet):
             raise ValueError('Unexpected identifier {0}'.format(identifier))
         else:
-            return self.find(identifier)
+            return found
 
     def __contains__(self, value):
         return value in self._values
@@ -511,7 +515,7 @@ UserStatus = Enum(active = 'ACTIVE',
 Gender = Enum(male = 'M',
               female = 'F',
               diverse = 'D',
-              unknown = 'NULL')
+              unknown = None)
 
 Subscription = Enum(author = 'author',
                     buyer = 'buyer',
