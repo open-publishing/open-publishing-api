@@ -111,11 +111,6 @@ class Document(DatabaseObject):
                                                         field_locator="othertext_biographical_note.text",
                                                         dtype=str)
 
-        self._fields["suppliers"] = SimpleField(database_object=self,
-                                                aspect="book.suppliers_in_stock",
-                                                field_locator="book.suppliers_in_stock",
-                                                dtype=set)
-
         
         self._fields["book"] = BookGroup(document=self)
         self._fields["prices"] = PriceGroup(document=self)
@@ -161,7 +156,6 @@ class Document(DatabaseObject):
     urls = FieldDescriptor("urls")
     excerpt = FieldDescriptor("excerpt")
     biographical_note = FieldDescriptor("biographical_note")
-    suppliers = FieldDescriptor("suppliers")
 
     book = FieldDescriptor("book")
     prices = FieldDescriptor("prices")
