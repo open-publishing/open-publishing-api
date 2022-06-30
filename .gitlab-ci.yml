@@ -12,13 +12,6 @@ stages:
   script:
   - pytest tests/test_init.py
 
-.publish-base: &publish-base
-  before_script:
-    - pip install --upgrade pip
-    - pip install twine
-    - echo "Releasing to $TWINE_REPOSITORY_URL"
-  script:
-    - twine upload dist/*.whl
 
 test-python3.5:
   image: python:3.5
@@ -44,6 +37,7 @@ package:
   stage: package
   variables:
     RELEASE_VERSION: "$CI_JOB_ID"
+  needs: []
   before_script:
     - pip install --upgrade pip
     - pip install wheel
@@ -53,10 +47,18 @@ package:
     paths:
     - dist/*
 
-publish:
+push_to_repo:
   stage: publish
   dependencies:
-    - package
+  - package
   only:
-    - master
-  <<: *publish-base
+  - master
+  before_script:
+  - pip install --upgrade pip
+  - pip install twine
+  script:
+  - >
+    TWINE_PASSWORD=${CI_JOB_TOKEN}
+    TWINE_USERNAME=gitlab-ci-token
+    python -m twine upload
+    --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
